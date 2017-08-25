@@ -1,13 +1,11 @@
-# VR-RC-Car-project :red_car:
+# VR-RC-Car-project
 RASPBERRY PI- ANDROID, MOUSE, KEYBOARD & BLUETOOTH-CONTROLLED RC-CAR WITH VR-GLASSES LIVE VIDEO STREAMING
-
-https://www.webpagefx.com/tools/emoji-cheat-sheet/
 
 ## Differences between versions :memo:
 
 <table width="600px">
   <tr>
-    <td align="center">VR RC Car</td>
+    <td align="center">VR RC Car :red_car:</td>
     <td align="center"><b>V1</b></td>
     <td align="center"><b>V2</b></td>
     <td align="center"><b>V3</b></td>
@@ -50,7 +48,7 @@ https://www.webpagefx.com/tools/emoji-cheat-sheet/
   </tr>
 </table
 
-### **:shipit:How to:shipit:**
+### **How to:mag_right:**
 > _Cameras - VR Glasses_
 
 - Open two Chrome windows on the phone and enter the RPi’s IP addresses in each of them.
