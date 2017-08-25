@@ -1,8 +1,8 @@
-# VR-RC-Car-project
+# VR-RC-Car-project :red_car:
 RASPBERRY PI- ANDROID, MOUSE, KEYBOARD & BLUETOOTH-CONTROLLED RC-CAR WITH VR-GLASSES LIVE VIDEO STREAMING
 
 
-## Differences between versions
+## Differences between versions :memo:
 
 <table width="600px">
   <tr>
