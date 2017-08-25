@@ -37,7 +37,7 @@ RASPBERRY PI- ANDROID-CONTROLLED RC-CAR WITH VR-GLASSES LIVE VIDEO STREAMING
   </tr>
   <tr>
     <td><b>ISSUES</b></td>
-    <td>Servo steering not finished</td>
+    <td>Servo rotation not callibrated?</td>
     <td>Servo rotation not callibrated</td>
     <td>Remote Controller's GameMode does not work - which is needed to control the car</td>
   </tr>
