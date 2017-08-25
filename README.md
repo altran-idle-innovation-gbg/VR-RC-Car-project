@@ -2,7 +2,7 @@
 RASPBERRY PI- ANDROID, MOUSE, KEYBOARD & BLUETOOTH-CONTROLLED RC-CAR WITH VR-GLASSES LIVE VIDEO STREAMING
 
 
-<h1> Differences between versions </h1>
+## Differences between versions
 
 <table width="600px">
   <tr>
@@ -49,7 +49,7 @@ RASPBERRY PI- ANDROID, MOUSE, KEYBOARD & BLUETOOTH-CONTROLLED RC-CAR WITH VR-GLA
   </tr>
 </table
 
-# **How to**
+## How to
 > _Cameras - VR Glasses_
 
 - Open two Chrome windows on the phone and enter the RPi’s IP addresses in each of them.
