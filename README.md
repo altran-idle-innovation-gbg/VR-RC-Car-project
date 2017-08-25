@@ -12,9 +12,9 @@ RASPBERRY PI- ANDROID-CONTROLLED RC-CAR WITH VR-GLASSES LIVE VIDEO STREAMING
     <td>VRCarcontrol.py</td>
   </tr>
   <tr>    
-    <td>VR RC Car</td>    
-    <td>keyboard_controlled_with_servo.py</td>    
-    <td>mouse_controlled_with_serv<small>.py</small></td>    
+    <td><strong>COMMUNICATION</strong></td>    
+    <td><b>CONTROL</b></td>    
+    <td>CONTROL INTERFACE</td>    
     <td>VRCarcontrol.py</td>  
   </tr>
 </table
