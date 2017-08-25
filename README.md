@@ -13,14 +13,14 @@ RASPBERRY PI- ANDROID-CONTROLLED RC-CAR WITH VR-GLASSES LIVE VIDEO STREAMING
   </tr>
   <tr>
     <td><b>COMMUNICATION</b></td>    
-    <td>RPi</td>    
-    <td>RPi</td>    
+    <td>RPi + computer mouse</td>    
+    <td>RPi + keyboard</td>    
     <td>Bluetooth</td>  
   </tr>
   <tr>
     <td><b>CONTROL INTERFACE</b></td>            
     <td>Computer Mouse movement (+left and right click)</td>            
-    <td>Keyboard buttons (A,S,D & W + Q,R & E + SPACE)</td>            
+    <td>Keyboard buttons (W,A,S & D + Q,R & E + SPACE)</td>            
     <td>Bluetooth Remote Controller</td>      
   </tr>
   <tr>
