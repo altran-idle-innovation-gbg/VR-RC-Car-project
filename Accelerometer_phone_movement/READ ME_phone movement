@@ -1,0 +1,16 @@
+
+		Wireless IMU 
+
+(1) -	Start Wireless IMU application on the phone.
+(2) -	Target IP Address = RPi's IP: click the VNC icon and you'll find it under Connectivity.
+(3) -	Target IP Port = 5555
+(4) -	Check the box "Run in background"
+
+Run /Desktop/PythonPrograms/Accelerometer/wireless_imu.py to get output from Wireless IMU app
+
+Decide servo movement according to the "y" value from:
+Accelerometer	:     [x]    [(y)]    [z]
+b'266741.15563, 3,  -1.411,  0.176,  9.722'
+				=
+			   4th value
+			  separated with commas(,)
