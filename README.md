@@ -7,9 +7,9 @@ RASPBERRY PI- ANDROID, MOUSE, KEYBOARD & BLUETOOTH-CONTROLLED RC-CAR WITH VR-GLA
 <table width="600px">
   <tr>
     <td align="center">VR RC Car</td>
-    <td align="center">V1</td>
-    <td align="center">V2</td>
-    <td align="center">V3</td>
+    <td align="center"><b>V1</b></td>
+    <td align="center"><b>V2</b></td>
+    <td align="center"><b>V3</b></td>
   </tr>
   <tr>
     <td><b>COMMUNICATION</b></td>    
@@ -49,11 +49,11 @@ RASPBERRY PI- ANDROID, MOUSE, KEYBOARD & BLUETOOTH-CONTROLLED RC-CAR WITH VR-GLA
   </tr>
 </table
 
-# How to
-> <b>Cameras - VR Glasses </b>
+# **How to**
+> _Cameras - VR Glasses_
 
-Open two Chrome windows on the phone and enter the RPi’s IP addresses in each of them.
-Find the IP address by opening the terminal and write "ifconfig" and press enter.
-Add port: 8080 after the IP, should look something like: http://10.46.2.108:8080
+- Open two Chrome windows on the phone and enter the RPi’s IP addresses in each of them.
+- Find the IP address by opening the terminal and write "ifconfig" and press enter.
+- Add port: 8080 after the IP, should look something like: http://10.46.2.108:8080
   - You will now come to a site called UV4L and then you click the "Web RTC"-icon.
   - Choose video-resolution and FPS and then press the green "Call"-
