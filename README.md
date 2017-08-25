@@ -19,15 +19,15 @@ RASPBERRY PI- ANDROID-CONTROLLED RC-CAR WITH VR-GLASSES LIVE VIDEO STREAMING
   </tr>
   <tr>
     <td><b>CONTROL INTERFACE</b></td>            
-    <td>Computer Mouse movement (+left and right click)</td>            
+    <td>Computer Mouse movement (+left, right & middle click)</td>            
     <td>Keyboard buttons (W,A,S & D + Q,R & E + SPACE)</td>            
     <td>Bluetooth Remote Controller</td>      
   </tr>
   <tr>
     <td><b>SERVO / CAMERA MOVEMENT</b></td>                
     <td>Yes</td>                
-    <td>Yes</td>                
-    <td>No</td>        
+    <td>Yes</td>
+    <td>No</td>
   </tr>
   <tr>
     <td><b>WORKING?</b></td>
@@ -37,8 +37,8 @@ RASPBERRY PI- ANDROID-CONTROLLED RC-CAR WITH VR-GLASSES LIVE VIDEO STREAMING
   </tr>
   <tr>
     <td><b>ISSUES</b></td>
-    <td>Servo rotation not callibrated?</td>
-    <td>Servo rotation not callibrated</td>
+    <td>Servo motor not OK, rotation not calibrated</td>
+    <td>Servo motor not OK, rotation not calibrated</td>
     <td>Remote Controller's GameMode does not work - which is needed to control the car</td>
   </tr>
 </table
