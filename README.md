@@ -37,8 +37,8 @@ RASPBERRY PI- ANDROID, MOUSE, KEYBOARD & BLUETOOTH-CONTROLLED RC-CAR WITH VR-GLA
   </tr>
   <tr>
     <td><b>ISSUES</b></td>
-    <td>Servo motor rotates more than 180°, maybe damaged</td>
-    <td>Servo motor rotates more than 180°, maybe damaged</td>
+    <td>Servo motor rotates more than 180°</td>
+    <td>Servo motor rotates more than 180°</td>
     <td>Remote Controller's GameMode does not work - which is needed to control the car</td>
   </tr>
 </table
