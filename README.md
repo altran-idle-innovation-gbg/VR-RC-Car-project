@@ -7,20 +7,38 @@ RASPBERRY PI- ANDROID-CONTROLLED RC-CAR WITH VR-GLASSES LIVE VIDEO STREAMING
 <table width="600px">
   <tr>
     <td align="center">VR RC Car</td>
-    <td><p align="center">V1</p></td>
-    <td>V2</td>
-    <td>V3</td>
+    <td align="center">V1</td>
+    <td align="center">V2</td>
+    <td align="center">V3</td>
   </tr>
-  <tr>    
+  <tr>
     <td><b>COMMUNICATION</b></td>    
     <td>RPi</td>    
     <td>RPi</td>    
     <td>Bluetooth</td>  
   </tr>
-  <tr>            
+  <tr>
     <td><b>CONTROL INTERFACE</b></td>            
-    <td><small>Computer Mouse movement (+left and right click)</small></td>            
-    <td>Keyboard buttons (A,S,D & W + Q,R & E)</td>            
+    <td>Computer Mouse movement (+left and right click)</td>            
+    <td>Keyboard buttons (A,S,D & W + Q,R & E + SPACE)</td>            
     <td>Bluetooth Remote Controller</td>      
+  </tr>
+  <tr>
+    <td><b>SERVO / CAMERA MOVEMENT</b></td>                
+    <td>Yes</td>                
+    <td>Yes</td>                
+    <td>No</td>        
+  </tr>
+  <tr>
+    <td><b>WORKING?</b></td>
+    <td>Yes</td>
+    <td>Yes</td>
+    <td>No</td>
+  </tr>
+  <tr>
+    <td><b>ISSUES</b></td>
+    <td>Servo steering not finished</td>
+    <td>Servo rotation not callibrated</td>
+    <td>Remote Controller's GameMode does not work - which is needed to control the car</td>
   </tr>
 </table
