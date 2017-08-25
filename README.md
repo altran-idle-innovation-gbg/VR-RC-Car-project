@@ -6,7 +6,7 @@ RASPBERRY PI- ANDROID-CONTROLLED RC-CAR WITH VR-GLASSES LIVE VIDEO STREAMING
 
 <table width="600px">
   <tr>
-    <td>VR RC Car</td>
+    <td class="style:text-align:center">VR RC Car</td>
     <td>V1</td>
     <td>V2</td>
     <td>V3</td>
