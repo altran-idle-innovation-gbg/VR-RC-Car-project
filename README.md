@@ -50,7 +50,7 @@ RASPBERRY PI- ANDROID, MOUSE, KEYBOARD & BLUETOOTH-CONTROLLED RC-CAR WITH VR-GLA
 </table
 
 
-<h1>How to</h1>
+# How to
 <b>Cameras - VR Glasses </b>
 
 Open two Chrome windows on the phone and enter the RPi’s IP addresses in each of them.
