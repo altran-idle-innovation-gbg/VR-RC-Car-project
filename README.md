@@ -49,9 +49,8 @@ RASPBERRY PI- ANDROID, MOUSE, KEYBOARD & BLUETOOTH-CONTROLLED RC-CAR WITH VR-GLA
   </tr>
 </table
 
-
 # How to
-<b>Cameras - VR Glasses </b>
+> <b>Cameras - VR Glasses </b>
 
 Open two Chrome windows on the phone and enter the RPi’s IP addresses in each of them.
 Find the IP address by opening the terminal and write "ifconfig" and press enter.
