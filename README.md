@@ -29,6 +29,12 @@ RASPBERRY PI- ANDROID, MOUSE, KEYBOARD & BLUETOOTH-CONTROLLED RC-CAR WITH VR-GLA
     <td>Yes</td>
     <td>No</td>
   </tr>
+  <tr>
+    <td><b>CAMERAS / VR-GLASSES</b></td>                
+    <td>Yes</td>                
+    <td>Yes</td>
+    <td>Yes</td>
+  </tr>
   <tr>
     <td><b>WORKING?</b></td>
     <td>Yes</td>
