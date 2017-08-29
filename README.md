@@ -57,7 +57,8 @@ RASPBERRY PI- ANDROID, MOUSE, KEYBOARD & BLUETOOTH-CONTROLLED RC-CAR WITH VR-GLA
   - Add connection and fill in the RPi's IP address, username and password. 
   - You can find the login details in the "Getting started" document.
   - Get the IP address by clicking the VNC server icon in top left corner of RPi desktop while connected to a monitor. 
-    Or open the terminal and write the command 'ifconfig'
+    Or open the terminal and write the command 'ifconfig' + Enter.
+  - Another option to get the IP address is to use the phone app "Network Scanner" and find the Raspberry Pi device.
 
 > _Cameras - VR Glasses_
 
