@@ -18,7 +18,7 @@ RASPBERRY PI- ANDROID, MOUSE, KEYBOARD & BLUETOOTH-CONTROLLED RC-CAR WITH VR-GLA
   </tr>
   <tr>
     <td><b>CONTROL INTERFACE</b></td>            
-    <td>Joystick on BT remote controller OR Computer Mouse movement</td>            
+    <td>Joystick on BT remote controller(Mouse mode) OR Computer Mouse movement</td>            
     <td>Keyboard buttons (W,A,S & D + Q,R & E + SPACE)</td>            
     <td>Bluetooth Remote Controller</td>      
   </tr>
