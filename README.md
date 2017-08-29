@@ -12,7 +12,7 @@ RASPBERRY PI- ANDROID, MOUSE, KEYBOARD & BLUETOOTH-CONTROLLED RC-CAR WITH VR-GLA
   </tr>
   <tr>
     <td><b>COMMUNICATION</b></td>    
-    <td>RPi + Bluetooth OR computer mouse(connected to RPi)</td>    
+    <td>RPi + VNC + Bluetooth OR computer mouse(connected to RPi)</td>    
     <td>RPi + keyboard</td>    
     <td>Bluetooth</td>  
   </tr>
