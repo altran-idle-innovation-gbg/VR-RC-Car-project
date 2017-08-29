@@ -53,6 +53,12 @@ RASPBERRY PI- ANDROID, MOUSE, KEYBOARD & BLUETOOTH-CONTROLLED RC-CAR WITH VR-GLA
 ## **:mag_right: How to**
 > _Display RPi Desktop on the phone_
 
+- Start the application VNC Viewer on the android phone.
+  - Add connection and fill in the RPi's IP address, username and password. 
+  - You can find the login details in the "Getting started" document.
+  - Get the IP address by clicking the VNC server icon in top left corner of RPi desktop while connected to a monitor. 
+    Or open the terminal and write the command 'ifconfig'
+
 > _Cameras - VR Glasses_
 
 - Open two Chrome windows on the phone and enter the RPi’s IP addresses in each of them.
