@@ -48,7 +48,7 @@ RASPBERRY PI- ANDROID, MOUSE, KEYBOARD & BLUETOOTH-CONTROLLED RC-CAR WITH VR-GLA
   </tr>
 </table
 
-### **:mag_right: How to**
+## **:mag_right: How to**
 > _Cameras - VR Glasses_
 
 :exclamation: Be sure you are connected to the same network on the phone and RPi. :exclamation:
