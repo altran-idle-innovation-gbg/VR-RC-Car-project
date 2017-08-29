@@ -48,10 +48,13 @@ RASPBERRY PI- ANDROID, MOUSE, KEYBOARD & BLUETOOTH-CONTROLLED RC-CAR WITH VR-GLA
   </tr>
 </table
 
+:exclamation: Be sure you are connected to the same network on the phone and RPi. :exclamation:
+
 ## **:mag_right: How to**
+> _Display RPi Desktop on the phone_
+
 > _Cameras - VR Glasses_
 
-:exclamation: Be sure you are connected to the same network on the phone and RPi. :exclamation:
 - Open two Chrome windows on the phone and enter the RPi’s IP addresses in each of them.
 - Find the IP address by opening the terminal and write "ifconfig" and press enter.
 - Add port: 8080 after the IP, should look something like: http://10.46.2.108:8080
