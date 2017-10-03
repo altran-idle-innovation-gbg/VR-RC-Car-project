@@ -33,49 +33,66 @@ gpio.setup(7,gpio.OUT)  #EN1 controls left hand side wheels (H-bridge connector 
 gpio.setup(11,gpio.OUT) #EN2 controles right hand side wheelsa (H-bridge connector J1 pin7)
 gpio.setup(13,gpio.OUT) # DIR1 LH True=Forward & False=Backward
 gpio.setup(15,gpio.OUT) # DIR2 RH True=Forward & False=Backward
-gpio.setup(16,gpio.OUT) # Sets the pin 16 as an output/signaling pin for the Servo
+gpio.setup(12,gpio.OUT) # Sets the pin 12 as an output/signaling pin for the Servo
 gpio.setwarnings(False)
 gpio.output(7,False)
 gpio.output(11,False)
 ###------------------ END GPIO INITIATION -----------------------
 
 ###------------- Servo on startup -------------------------------
-servoPin = 16 # Servo signaling pin
+servoPin = 12 # Servo signaling pin
 
 pwm = gpio.PWM(servoPin,50)
-pwm.start(7) # Makes the servo point straight forward
+pwm.start(7.5) # Makes the servo point straight forward
 
 time.sleep(0.5)   # The time for the servo to straighten forward
-pwm.stop()      # Stop the servo
+#pwm.stop()      # Stop the servo
 ###----------- END Servo on startup ------------------------------
 
 ###------Variables--------
 
 t = 0.05 #run time
+DC = 7.5  # Servo Straight forward
+servoStepLength=0.5  # Set Step length for Servo
 
 ###---END Variables-------
 
 ###-------Define class with GPIO instructions for driving---------
 def servoLeft():
-    servoPin = 16 # Servo signaling pin
-    pwm = gpio.PWM(servoPin,50)
-    pwm.start(9) # Makes the servo point left
+    global DC
+    DC=5.5
+    pwm.ChangeDutyCycle(DC) # Makes the servo point left
     time.sleep(1)   # The time for the servo to turn left
-    pwm.stop()      # Stop the servo
     
 def servoStraight():
-    servoPin = 16 # Servo signaling pin
-    pwm = gpio.PWM(servoPin,50)
-    pwm.start(6) # Makes the servo point straight forward
+    global DC
+    DC=7.5
+    pwm.ChangeDutyCycle(DC) # Makes the servo point straight forward
     time.sleep(1)   # The time for the servo to point forward
-    pwm.stop()      # Stop the servo
 
 def servoRight():
-    servoPin = 16 # Servo signaling pin
-    pwm = gpio.PWM(servoPin,50)
-    pwm.start(2) # Makes the servo point right
+    global DC
+    DC=9.5
+    pwm.ChangeDutyCycle(DC) # Makes the servo point right
     time.sleep(1)   # The time for the servo to turn right
-    pwm.stop()      # Stop the servo
+
+def servoTurnLeft():
+    global DC
+    if DC>=5.5+servoStepLength:
+        DC=DC-servoStepLength
+        pwm.ChangeDutyCycle(DC)
+    else:
+        print('Maximum Left turn acheived')
+        print('DC = ', DC)
+
+def servoTurnRight():
+    global DC
+    if DC<=9.5-servoStepLength:
+        DC=DC+servoStepLength
+        pwm.ChangeDutyCycle(DC)
+    else:
+        print('Maximum Left turn acheived')
+        print('DC = ', DC)
 
 def driveForward():
     gpio.output(7, False)  # EN1 Enable RH wheels to spin
@@ -130,6 +147,7 @@ def quit():
     except:
         pass
     stopAll()
+    pwm.stop()
     gpio.cleanup()
     print ("Shutting down!")
 ###--------END Define quit game class ----------------
@@ -179,7 +197,12 @@ def main():
                     servoRight()
                 if event.key == K_e: # key <E> Turn servo straight forward
                     servoStraight()
-                    
+                
+                if event.key == K_c:
+                    servoTurnLeft()
+                if event.key == K_v:
+                    servoTurnRight()
+
                 if event.key == K_ESCAPE: # key <Esc> QUIT
                     quit()
             elif event.type == pygame.KEYUP:
