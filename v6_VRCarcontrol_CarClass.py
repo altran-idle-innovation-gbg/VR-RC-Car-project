@@ -10,7 +10,7 @@ import string
 import re
 import socket, traceback
 
-### -------------------Accelerometer--------------------
+# -------------------Accelerometer--------------------
 
 host = ''
 port = 5555
@@ -19,7 +19,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 s.bind((host, port))
-###------------------- End Accelerometer -------------------------------
+# ------------------- End Accelerometer -------------------------------
 
 # -------------------- GPIO INITIATION ------------------------
 
@@ -141,7 +141,7 @@ def stop_all():
 
 # --------Servo Movements--------------
 
-
+'''
 def printit():
     while runner:
 
@@ -154,13 +154,13 @@ def printit():
         print (temp3)
         acc = float(temp3)
 
-        if (-3 < acc < -1):
+        if -3 < acc < -1:
             runs = True
             acc2 = 5.5  # left
-        elif (1 < acc < 3):
+        elif 1 < acc < 3:
             runs = True
             acc2 = 9.5  # right
-        elif (-1 <= acc <= 1):
+        elif -1 <= acc <= 1:
             runs = True
             acc2 = 7.5  # middle
         else:
@@ -175,7 +175,7 @@ def printit():
         except:
             traceback.print_exc()
 
-
+'''
 #####----------------------END servo movement--------------------
 
 # --------------------- Driving direction list ----------------------
@@ -191,19 +191,23 @@ def drive_direction(axis0, axis1):
     axis0 = int(round(axis0))
     axis1 = int(round(axis1))
     if axis0 == 0 and axis1 == -1:
-        the_car.set_driving_direction('forward')
+        #the_car.set_driving_direction('forward')
         print ("Going Forward")
+        return 'forward'
     elif axis0 == 0 and axis1 == 1:
-        the_car.set_driving_direction('backward')
+        #the_car.set_driving_direction('backward')
         print ("Going Backward")
+        return 'backward'
     elif axis0 == -1:
-        the_car.set_driving_direction('left')
+        #the_car.set_driving_direction('left')
         print ("Going LeftForward")
+        return 'left'
     elif axis0 == 1:
-        the_car.set_driving_direction('right')
+        #the_car.set_driving_direction('right')
         print ("Going RightForward")
+        return 'right'
     else:
-        stop_all()
+        return 'stop'
 '''   elif axis0 == -1 and axis1 == 1:
         driveLeftBackward()
         print ("Going LeftBackward")
@@ -254,8 +258,7 @@ def main():
     '''the main loop can be toggled between joystick and keyboard
     controls by pressing the <space> key. while using keyboard controls,
     speed can be set using number keys 1 - 9'''
-
-    the_car = CAR()
+    the_car = Car()
     stop = False
     while True:
         if stop:
@@ -271,7 +274,8 @@ def main():
                 if event.type == pygame.JOYAXISMOTION:
                     axis0 = joyStick.get_axis(0)
                     axis1 = joyStick.get_axis(1)
-                    drive_direction(axis0, axis1)
+                    update_driving_direction = drive_direction(axis0, axis1)
+                    the_car.set_driving_direction(update_driving_direction)
                 elif event.type == pygame.JOYBUTTONDOWN:
                     if event.button == 1: #button C on joystick-VRBOX for camera turn LEFT
                         the_car.servo_turn_left()
@@ -289,7 +293,7 @@ def main():
                     elif event.key == K_ESCAPE:
                         stop = True
 
-        stopAll()
+        stop_all()
 
         running = True
         while running:
