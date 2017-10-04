@@ -1,4 +1,4 @@
-import RPi.GPIO as gpio
+import RPi.GPIO as GPIO
 import pygame
 import time
 from time import sleep
@@ -28,120 +28,122 @@ PHOTOS_DIR = "/home/pi/Desktop/Tank_photos"  # save photos to a any directory
 SNAP_PHOTO = "raspistill -w 1920 -h 1080 -t 500 -o " + PHOTOS_DIR + "/"
 IMAGE_NUMBERS_TXT_FILE = "image_numbers.txt"  # text file to append number to 'image.jpg'
 EMAIL_TO = "altran.innovation.gbg@gmail.com"
-###### GPIO INITIATION #######
-gpio.setmode(
-    gpio.BOARD)  # Below 4 rows just tells the RPi what theese pins are output pinns =(pins to send signals to the H-brige with)
-gpio.setup(7, gpio.OUT)  # EN1 controls left hand side wheels (H-bridge connector J1 pin1)
-gpio.setup(11, gpio.OUT)  # EN2 controles right hand side wheelsa (H-bridge connector J1 pin7)
-gpio.setup(13, gpio.OUT)  # DIR1 LH True=Forward & False=Backward
-gpio.setup(15, gpio.OUT)  # DIR2 RH True=Forward & False=Backward
-gpio.setup(16, gpio.OUT)  # Sets the pin 16 as an output/signaling pin for the Servo
-gpio.setwarnings(False)
-gpio.output(7, False)
-gpio.output(11, False)
-###### Servo on startup #########
-servoPin = 16  # Servo signaling pin
+# -------------------- GPIO INITIATION ------------------------
+GPIO.setmode(GPIO.BOARD)
+# Below 4 rows just tells the RPi what theese pins are output pinns =(pins to send signals to the H-brige with)
+GPIO.setup(7, GPIO.OUT)  # EN1 controls left hand side wheels (H-bridge connector J1 pin1)
+GPIO.setup(11, GPIO.OUT)  # EN2 controles right hand side wheelsa (H-bridge connector J1 pin7)
+GPIO.setup(13, GPIO.OUT)  # DIR1 LH True=Forward & False=Backward
+GPIO.setup(15, GPIO.OUT)  # DIR2 RH True=Forward & False=Backward
 
-pwm = gpio.PWM(servoPin, 50)
-pwm.start(9)  # Makes the servo point straight forward
+GPIO.setup(12, GPIO.OUT)  # Sets the pin 12 as an output/signaling pin for the Servo
+GPIO.setwarnings(False)
+GPIO.output(7, False)
+GPIO.output(11, False)
+# ------------------ END GPIO INITIATION -----------------------
 
-time.sleep(1)  # The time for the servo to straighten forward
-pwm.stop()  # Stop the servo
-###### END Servo on startup ######
+# -------------------Start Car Class-------------------------------
+class Car(object):
+
+    def __init__(self):
+        self.drivingDirection = "stop"
+        self.cameraDirection = 7.5
+
+    def get_driving_direction(self):
+        return self.drivingDirection
+
+    def set_driving_direction(self, driving_direction):
+        self.drivingDirection = driving_direction
+
+    def get_camera_direction(self):
+        return self.cameraDirection
+
+    def set_camera_direction(self, camera_direction):
+        self.cameraDirection = camera_direction
+
+    def servo_turn_left(self):
+        if self.cameraDirection >= 5.5 + servoStepLength:
+            self.cameraDirection -= servoStepLength
+        else:
+            print('Maximum Left turn acheived')
+
+    def servo_turn_right(self):
+        if self.cameraDirection <= 9.5 - servoStepLength:
+            self.cameraDirection += servoStepLength
+            pwm.ChangeDutyCycle(DC)
+        else:
+            print('Maximum Right turn acheived')
+
+
+# -------------------End Car Class------------------------------
+
+# ------------- Servo on startup -------------------------------
+servoPin = 12  # Servo signaling pin
+pwm = GPIO.PWM(servoPin, 50)
+pwm.start(7.5)  # Makes the servo point straight forward
+time.sleep(0.5)  # The time for the servo to straighten forward
+# ----------- END Servo on startup ------------------------------
+
+# ------Variables--------
 
 t = 0.05  # run time
+DC = 7.5  # Servo Straight forward
+servoStepLength = 0.5  # Set Step length for Servo
+stop = False
 
+# ---END Variables-------
+
+# -------Define class with GPIO instructions for driving---------
+
+
+def drive_forward():
+    GPIO.output(7, False)  # EN1 Enable RH wheels to spin
+    GPIO.output(11, False)  # EN2 Enable LH wheels to spin
+    GPIO.output(13, True)  # Enable RH wheels to spin forward
+    GPIO.output(15, True)  # Enable LH wheels to spin forward
+    GPIO.output(7, True)  # EN1 Enable RH wheels to spin
+    GPIO.output(11, True)  # EN2 Enable LH wheels to spin
+
+
+def drive_backward():
+    GPIO.output(7, False)  # EN1 Enable RH wheels to spin
+    GPIO.output(11, False)  # EN2 Enable LH wheels to spin
+    GPIO.output(13, False)  # Enable RH wheels to spin backwards
+    GPIO.output(15, False)  # Enable LH wheels to spin backwards
+    GPIO.output(7, True)  # EN1 Enable RH wheels to spin
+    GPIO.output(11, True)  # EN2 Enable LH wheels to spin
+
+
+def drive_left_forward():
+    GPIO.output(7, False)  # EN1 Enables RH wheels to spin
+    GPIO.output(11, False)  # EN2 Disable LH wheels to spin
+    GPIO.output(13, True)  # Enabels RH wheels to spin forward
+    GPIO.output(15, False)  # Enabels LH wheels to spin backwards
+    GPIO.output(7, True)  # EN1 Enables RH wheels to spin
+    GPIO.output(11, False)  # EN2 Disable LH wheels to spin
+
+
+def drive_right_forward():
+    GPIO.output(7, False)  # EN1 Disable RH wheels to spin
+    GPIO.output(11, False)  # EN2 Enables LH wheels to spin
+    GPIO.output(13, False)  # Enabels RH wheels to spin backwards
+    GPIO.output(15, True)  # Enabels LH wheels to spin forward
+    GPIO.output(7, False)  # EN1 Disable RH wheels to spin
+    GPIO.output(11, True)  # EN2 Enables LH wheels to spin
+
+
+# --- Stop motors --- #
+def stop_all():
+    GPIO.output(7, 0)
+    GPIO.output(11, 0)
+    GPIO.output(13, 0)
+    GPIO.output(15, 0)
+# --END Stop motors--##
+
+# ---END-Define class with GPIO instructions for driving---------
 
 # ---------------------------------------------------
 # Define class with GPIO instructions for driving
-
-def servoLeft():
-    servoPin = 16  # Servo signaling pin
-    pwm = gpio.PWM(servoPin, 50)
-    pwm.start(1)  # Makes the servo point left
-    time.sleep(1)  # The time for the servo to turn left
-    pwm.stop()  # Stop the servo
-
-
-def servoStraight():
-    servoPin = 16  # Servo signaling pin
-    pwm = gpio.PWM(servoPin, 50)
-    pwm.start(6.5)  # Makes the servo point straight forward
-    time.sleep(1)  # The time for the servo to point forward
-    pwm.stop()  # Stop the servo
-
-
-def servoRight():
-    servoPin = 16  # Servo signaling pin
-    pwm = gpio.PWM(servoPin, 50)
-    pwm.start(13)  # Makes the servo point right
-    time.sleep(1)  # The time for the servo to turn right
-    pwm.stop()  # Stop the servo
-
-
-def driveForward():
-    gpio.output(7, True)  # EN1 Enable RH wheels to spin
-    gpio.output(11, True)  # EN2 Enable LH wheels to spin
-    gpio.output(13, True)  # Enable RH wheels to spin forward
-    gpio.output(15, True)  # Enable LH wheels to spin forward
-    time.sleep(t)
-
-
-def driveBackward():
-    gpio.output(7, True)  # EN1 Enable RH wheels to spin
-    gpio.output(11, True)  # EN2 Enable LH wheels to spin
-    gpio.output(13, False)  # Enable RH wheels to spin backwards
-    gpio.output(15, False)  # Enable LH wheels to spin backwards
-    time.sleep(t)
-
-
-def driveLeftForward():
-    gpio.output(7, True)  # EN1 Enables RH wheels to spin
-    gpio.output(11, False)  # EN2 Disable LH wheels to spin
-    gpio.output(13, True)  # Enabels RH wheels to spin forward
-    gpio.output(15, False)  # Enabels LH wheels to spin backwards
-    time.sleep(t)
-
-
-def driveRightForward():
-    gpio.output(7, False)  # EN1 Disable RH wheels to spin
-    gpio.output(11, True)  # EN2 Enables LH wheels to spin
-    gpio.output(13, False)  # Enabels RH wheels to spin backwards
-    gpio.output(15, True)  # Enabels LH wheels to spin forward
-    time.sleep(t)
-
-
-def driveLeftBackward():
-    gpio.output(7, True)  # EN1 Enables RH wheels to spin
-    gpio.output(11, False)  # EN2 Disable LH wheels to spin
-    gpio.output(13, False)  # Enabels RH wheels to spin backwards
-    gpio.output(15, False)  # Enabels LH wheels to spin backwards
-    time.sleep(t)
-
-
-def driveRightBackward():
-    gpio.output(7, False)  # EN1 Disable RH wheels to spin
-    gpio.output(11, True)  # EN2 Enables LH wheels to spin
-    gpio.output(13, False)  # Enabels RH wheels to spin backwards
-    gpio.output(15, False)  # Enabels LH wheels to spin forward
-    time.sleep(t)
-
-
-def driveLeftPivot():
-    gpio.output(7, True)  # EN1 Enable RH wheels to spin
-    gpio.output(11, True)  # EN2 Enable LH wheels to spin
-    gpio.output(13, True)  # Enable LH wheels to spin backward
-    gpio.output(15, False)  # Enable RH wheels to spin forward
-    time.sleep(t)
-
-
-def driveRightPivot():
-    gpio.output(7, True)  # EN1 Enable RH wheels to spin
-    gpio.output(11, True)  # EN2 Enable LH wheels to spin
-    gpio.output(13, False)  # Enable RH wheels to spin forward
-    gpio.output(15, True)  # Enable LH wheels to spin backwards
-    time.sleep(t)
-
 
 def printit():
     #####------------------------servo movement--------------------
@@ -194,11 +196,6 @@ def printit():
 ##        gpio.output(11,False) # EN2 Disable LH wheels to spin
 ##        running = False
 
-def stopAll():
-    gpio.output(7, 0)
-    gpio.output(11, 0)
-    gpio.output(13, 0)
-    gpio.output(15, 0)
 
 
 def driveDirection(axis0, axis1):
@@ -231,7 +228,22 @@ def driveDirection(axis0, axis1):
     if axis0 == 0 and axis1 == 0:
         stopAll()
 
+# ----------Define quit game class -----------------
+def stop_program():
+     """shuts down all running components of program"""
+     '''
+     try:
+        joyStick.quit()
+     except:
+        pass
+        '''
+     stop_all()
+     pwm.stop()
+     GPIO.cleanup()
+     print ("Shutting down!")
 
+
+        # --------END Define quit game class ----------------
 # ---------------------------------------------------
 
 
@@ -246,76 +258,23 @@ screen = pygame.display.set_mode((240, 240))
 pygame.display.set_caption('VR CAR')
 ## print ("testDISPLAY")
 
-"""this sets up the GPIO pins (GPIO.BOARD) to be used
-with a TB6612FNG motor controller as labeled"""
-##AIN1 = 3 # left side motor
-##AIN2 = 5 # left side motor
-##BIN1 = 8 # right side motor
-##BIN2 = 10 # right side motor
-##PWMA = 11 # left side PWM
-##PWMB = 12 # right side PWM
-##STBY = 7 # standby pin
-
-speed = 50
-
-
-def getFileNum(txt_file):
-    """returns a sequential number that reads and writes to
-    image_numbers.txt"""
-
-    read_number = open(txt_file, 'r')
-    num = int(read_number.read()) + 1
-    read_number.close()
-
-    write_number = open(txt_file, 'w')
-    str_num = str(num)
-    write_number.write(str_num)
-    write_number.close()
-
-    read_number = open(txt_file, 'r')
-    number = read_number.read()
-    read_number.close()
-
-    return number
-
-
-def getFileName(txt_file):
-    """returns a sequential file name to photos taken"""
-
-    number = str(getFileNum(txt_file))
-    return "image_" + number + ".jpg"
-
-
-def takePic(file_name):
-    os.system(RASPICAM_OFF)
-    time.sleep(.5)
-    os.system(SNAP_PHOTO + file_name)
-    os.system(RASPICAM_ON)
-    return file_name
-
-
-def emailPic(email):
-    file_name = takePic(getFileName(IMAGE_NUMBERS_TXT_FILE))
-    os.system("/home/pi/email_attach.py " + PHOTOS_DIR + file_name + " " + email + "&")
-    print file_name + " emailed to " + email
-
-
 def main():
     '''the main loop can be toggled between joystick and keyboard
     controls by pressing the <space> key. while using keyboard controls,
     speed can be set using number keys 1 - 9'''
 
     #    os.system(RASPICAM_ON)
+    the_car = CAR()
     stop = False
     while True:
-        if stop == True:
+        if stop:
             break
         running = True
         runner = True
         lights = 0
         while running:
             time.sleep(.02)
-            if stop == True:
+            if stop:
                 break
             for event in pygame.event.get():
                 if event.type == pygame.JOYAXISMOTION:
@@ -366,19 +325,6 @@ def main():
                         stop = Truewsw
                 elif event.type == pygame.KEYUP:
                     stopAll()
-
-
-def quit():
-    """shuts down all running components of program"""
-
-    try:
-        joyStick.quit()
-    except:
-        pass
-    stopAll()
-    os.system(RASPICAM_OFF)
-    print "Goodbye!"
-
 
 main()
 quit()
