@@ -2,20 +2,11 @@
 # This example is for controlling the GoPiGo robot from a mouse scroll                          
 # http://www.dexterindustries.com/GoPiGo/                                                                
 # #######################################################################
-# import struct
-# import sys
-# from gopigo import *
 
 import RPi.GPIO as GPIO
 import pygame
 import time
-# Vfrom time import sleep
-# import os
-# import math
 from pygame.locals import *
-
-# import string
-# import re
 import socket
 
 # -------------------Accelerometer-----------------------
@@ -35,6 +26,7 @@ GPIO.setup(7, GPIO.OUT)  # EN1 controls left hand side wheels (H-bridge connecto
 GPIO.setup(11, GPIO.OUT)  # EN2 controles right hand side wheelsa (H-bridge connector J1 pin7)
 GPIO.setup(13, GPIO.OUT)  # DIR1 LH True=Forward & False=Backward
 GPIO.setup(15, GPIO.OUT)  # DIR2 RH True=Forward & False=Backward
+
 GPIO.setup(12, GPIO.OUT)  # Sets the pin 12 as an output/signaling pin for the Servo
 GPIO.setwarnings(False)
 GPIO.output(7, False)
@@ -45,8 +37,6 @@ GPIO.output(11, False)
 
 # -------------------Start Car Class-------------------------------
 class Car(object):
-    # drivingDirection = ""
-    # cameraDirection = 7.5
 
     def __init__(self):
         self.drivingDirection = "stop"
@@ -82,12 +72,9 @@ class Car(object):
 
 # ------------- Servo on startup -------------------------------
 servoPin = 12  # Servo signaling pin
-
 pwm = GPIO.PWM(servoPin, 50)
 pwm.start(7.5)  # Makes the servo point straight forward
-
 time.sleep(0.5)  # The time for the servo to straighten forward
-# pwm.stop()      # Stop the servo
 # ----------- END Servo on startup ------------------------------
 
 # ------Variables--------
@@ -142,8 +129,8 @@ def drive_right_forward():
 def stop_all():
     GPIO.output(7, 0)
     GPIO.output(11, 0)
-    # gpio.output(13, 0)
-    # gpio.output(15, 0)
+    GPIO.output(13, 0)
+    GPIO.output(15, 0)
 
 
 # --END Stop motors--##
@@ -196,7 +183,6 @@ def main():
     while runs:
         time.sleep(.02)
         if stop:
-            # stop_program()
             break
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -205,29 +191,22 @@ def main():
                 if event.key == K_w:  # key <W> Move forward
                     the_car.set_driving_direction('forward')
                     print(the_car.get_driving_direction())
-                    # driveForward()
                 if event.key == K_s:  # key <S> Move backward
                     the_car.set_driving_direction('backward')
                     print(the_car.get_driving_direction())
-                    # driveBackward()
                 if event.key == K_a:  # key <A> Move left
                     the_car.set_driving_direction('left')
                     print(the_car.get_driving_direction())
-                    # driveLeftForward()
                 if event.key == K_d:  # key <D> Move right
                     the_car.set_driving_direction('right')
                     print(the_car.get_driving_direction())
-                    # driveRightForward()
 
                 if event.key == K_q:  # key <Q> Turn servo left
                     the_car.set_camera_direction(5.5)
-                    # servoLeft()
                 if event.key == K_r:  # key <R> Turn servo right
                     the_car.set_camera_direction(9.5)
-                    # servoRight()
                 if event.key == K_e:  # key <E> Turn servo straight forward
                     the_car.set_camera_direction(7.5)
-                    # servoStraight()
 
                 if event.key == K_c:
                     the_car.servo_turn_left()
@@ -242,7 +221,7 @@ def main():
             elif event.type == pygame.KEYUP:
                 the_car.set_driving_direction('stop')
                 print(the_car.get_driving_direction())
-                # stopAll()
+				
             drivingDirectionList[the_car.get_driving_direction()]()
             pwm.ChangeDutyCycle(the_car.get_camera_direction())
             time.sleep(0.05)
