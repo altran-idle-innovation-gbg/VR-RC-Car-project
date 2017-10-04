@@ -167,11 +167,13 @@ def stop_program():
 # --------Initialize pyGame -------------------
 pygame.init()
 pygame.joystick.init()
+'''
 try:
     joyStick = pygame.joystick.Joystick(0)
     joyStick.init()
 except:
     pass
+    '''
 screen = pygame.display.set_mode((240, 240))
 pygame.display.set_caption('VR CAR')
 # ------ END Initialize pyGame ----------------
@@ -191,8 +193,8 @@ def main():
 
     while runs:
         time.sleep(.02)
-        if stop == True:
-            #stop_program()
+        if stop:
+            # stop_program()
             break
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -234,7 +236,7 @@ def main():
 
                 if event.key == K_ESCAPE:  # key <Esc> QUIT
                     global stop
-                    stop=True
+                    stop = True
             elif event.type == pygame.KEYUP:
                 the_car.set_driving_direction('stop')
                 print(the_car.get_driving_direction())
