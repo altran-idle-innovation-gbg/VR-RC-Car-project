@@ -100,6 +100,8 @@ stop = False
 # ---END Variables-------
 
 # -------Define class with GPIO instructions for driving---------
+
+
 def drive_forward():
     GPIO.output(7, False)  # EN1 Enable RH wheels to spin
     GPIO.output(11, False)  # EN2 Enable LH wheels to spin
