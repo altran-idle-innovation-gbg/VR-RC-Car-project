@@ -63,7 +63,6 @@ class Car(object):
     def servo_turn_right(self):
         if self.cameraDirection <= 9.5 - servoStepLength:
             self.cameraDirection += servoStepLength
-            pwm.ChangeDutyCycle(DC)
         else:
             print('Maximum Right turn acheived')
 
@@ -80,7 +79,6 @@ time.sleep(0.5)  # The time for the servo to straighten forward
 # ------Variables--------
 
 t = 0.05  # run time
-DC = 7.5  # Servo Straight forward
 servoStepLength = 0.5  # Set Step length for Servo
 stop = False
 

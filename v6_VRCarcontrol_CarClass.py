@@ -36,6 +36,14 @@ GPIO.output(11, False)
 
 # ------------------ END GPIO INITIATION -----------------------
 
+# ------Variables--------
+
+t = 0.05  # run time
+servoStepLength = 0.5  # Set Step length for Servo
+stop = False
+
+# ---END Variables-------
+
 # -------------------Start Car Class-------------------------------
 class Car(object):
 
@@ -64,7 +72,6 @@ class Car(object):
     def servo_turn_right(self):
         if self.cameraDirection <= 9.5 - servoStepLength:
             self.cameraDirection += servoStepLength
-            pwm.ChangeDutyCycle(DC)
         else:
             print('Maximum Right turn acheived')
 
@@ -77,15 +84,6 @@ pwm = GPIO.PWM(servoPin, 50)
 pwm.start(7.5)  # Makes the servo point straight forward
 time.sleep(0.5)  # The time for the servo to straighten forward
 # ----------- END Servo on startup ------------------------------
-
-# ------Variables--------
-
-t = 0.05  # run time
-DC = 7.5  # Servo Straight forward
-servoStepLength = 0.5  # Set Step length for Servo
-stop = False
-
-# ---END Variables-------
 
 # -------Define class with GPIO instructions for driving---------
 
