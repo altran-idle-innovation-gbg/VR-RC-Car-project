@@ -23,7 +23,8 @@ s.bind((host, port))
 
 # -------------------- GPIO INITIATION ------------------------
 
-GPIO.setmode(GPIO.BOARD)  # Below 4 rows just tells the RPi what theese pins are output pinns =(pins to send signals to the H-brige with)
+GPIO.setmode(GPIO.BOARD)
+# Below 4 rows just tells the RPi what theese pins are output pinns =(pins to send signals to the H-brige with)
 GPIO.setup(7, GPIO.OUT)  # EN1 controls left hand side wheels (H-bridge connector J1 pin1)
 GPIO.setup(11, GPIO.OUT)  # EN2 controls right hand side wheelsa (H-bridge connector J1 pin7)
 GPIO.setup(13, GPIO.OUT)  # DIR1 LH True=Forward & False=Backward
@@ -42,11 +43,11 @@ t = 0.05  # run time
 servoStepLength = 0.5  # Set Step length for Servo
 stop = False
 
+
 # ---END Variables-------
 
 # -------------------Start Car Class-------------------------------
 class Car(object):
-
     def __init__(self):
         self.drivingDirection = "stop"
         self.cameraDirection = 7.5
@@ -83,6 +84,8 @@ servoPin = 12  # Servo signaling pin
 pwm = GPIO.PWM(servoPin, 50)
 pwm.start(7.5)  # Makes the servo point straight forward
 time.sleep(0.5)  # The time for the servo to straighten forward
+
+
 # ----------- END Servo on startup ------------------------------
 
 # -------Define class with GPIO instructions for driving---------
@@ -130,6 +133,8 @@ def stop_all():
     GPIO.output(11, 0)
     GPIO.output(13, 0)
     GPIO.output(15, 0)
+
+
 # --END Stop motors--##
 
 # ---END-Define class with GPIO instructions for driving---------
@@ -174,38 +179,41 @@ def printit():
             traceback.print_exc()
 
 '''
-#####----------------------END servo movement--------------------
+# ####----------------------END servo movement--------------------
 
 # --------------------- Driving direction list ----------------------
 
 driving_direction_list = {'forward': drive_forward, 'backward': drive_backward,
-                        'left': drive_left_pivot, 'right': drive_right_pivot, 'stop': stop_all}
+                          'left': drive_left_pivot, 'right': drive_right_pivot, 'stop': stop_all}
+
 
 # --------------------- End Driving Direction List ------------------
 
-## -------------------- Start joystick control ---------------------
+# # -------------------- Start joystick control ---------------------
 
 def drive_direction(axis0, axis1):
     axis0 = int(round(axis0))
     axis1 = int(round(axis1))
     if axis0 == 0 and axis1 == -1:
-        #the_car.set_driving_direction('forward')
+        # the_car.set_driving_direction('forward')
         print ("Going Forward")
         return 'forward'
     elif axis0 == 0 and axis1 == 1:
-        #the_car.set_driving_direction('backward')
+        # the_car.set_driving_direction('backward')
         print ("Going Backward")
         return 'backward'
     elif axis0 == -1:
-        #the_car.set_driving_direction('left')
+        # the_car.set_driving_direction('left')
         print ("Going LeftForward")
         return 'left'
     elif axis0 == 1:
-        #the_car.set_driving_direction('right')
+        # the_car.set_driving_direction('right')
         print ("Going RightForward")
         return 'right'
     else:
         return 'stop'
+
+
 '''   elif axis0 == -1 and axis1 == 1:
         driveLeftBackward()
         print ("Going LeftBackward")
@@ -217,27 +225,30 @@ def drive_direction(axis0, axis1):
         print ("LeftPivot")
     elif axis0 == 1 and axis1 == 0:
         driveRightPivot()
-        print ("RightPivot")'''
+        print ("RightPivot")
+'''
 
 
-## ------------------- End Joystick control -------------------
+# # ------------------- End Joystick control -------------------
 
 # ----------Define quit game class -----------------
 def stop_program():
-     """shuts down all running components of program"""
+    """shuts down all running components of program"""
 
-     try:
+    try:
         joyStick.quit()
-     except:
+    except:
         pass
 
-     stop_all()
-     pwm.stop()
-     GPIO.cleanup()
-     print ("Shutting down!")
+    stop_all()
+    pwm.stop()
+    GPIO.cleanup()
+    print ("Shutting down!")
 
 
-        # --------END Define quit game class ----------------
+# --------END Define quit game class ----------------
+
+
 # ---------------------------------------------------
 
 
@@ -250,12 +261,17 @@ except:
     pass
 screen = pygame.display.set_mode((240, 240))
 pygame.display.set_caption('VR CAR')
-## print ("testDISPLAY")
+
+
+# # print ("testDISPLAY")
+
 
 def main():
-    '''the main loop can be toggled between joystick and keyboard
-    controls by pressing the <space> key. while using keyboard controls,
-    speed can be set using number keys 1 - 9'''
+    """
+        the main loop can be toggled between joystick and keyboard
+        controls by pressing the <space> key. while using keyboard controls,
+        speed can be set using number keys 1 - 9
+    """
     the_car = Car()
     stop = False
     while True:
@@ -275,13 +291,13 @@ def main():
                     update_driving_direction = drive_direction(axis0, axis1)
                     the_car.set_driving_direction(update_driving_direction)
                 elif event.type == pygame.JOYBUTTONDOWN:
-                    if event.button == 1: #button C on joystick-VRBOX for camera turn LEFT
+                    if event.button == 1:  # button C on joystick-VRBOX for camera turn LEFT
                         the_car.servo_turn_left()
                         print ("Camera turn left")
-                    if event.button == 4: #button A on joystick-VRBOX for camera point STRAIGHT
+                    if event.button == 4:  # button A on joystick-VRBOX for camera point STRAIGHT
                         the_car.set_camera_direction(7.5)
                         print ("Camera point straight forward")
-                    if event.button == 3: #button D on joystick-VRBOX for camera turn RIGHT
+                    if event.button == 3:  # button D on joystick-VRBOX for camera turn RIGHT
                         the_car.servo_turn_right()
                         print ("Camera turn right")
                 elif event.type == pygame.KEYDOWN:
@@ -338,6 +354,8 @@ def main():
                 driving_direction_list[the_car.get_driving_direction()]()
                 pwm.ChangeDutyCycle(the_car.get_camera_direction())
                 time.sleep(0.05)
+
+
 try:
     main()
 except:
