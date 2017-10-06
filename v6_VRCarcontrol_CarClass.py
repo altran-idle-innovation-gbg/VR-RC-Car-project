@@ -5,16 +5,16 @@ from pygame.locals import *
 import re
 import socket
 
-# -------------------Accelerometer--------------------
+# ------------------- Accelerometer --------------------
 host = ''
 port = 5555
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 s.bind((host, port))
-# ------------------- End Accelerometer -------------------------------
+# ----------------- End Accelerometer -------------------------------
 
-# -------------------- GPIO INITIATION ------------------------
+# ------------------ GPIO INITIATION ------------------------
 
 GPIO.setmode(GPIO.BOARD)  # Below 4 rows sets the output pins for motor control
 GPIO.setup(7, GPIO.OUT)  # EN1 controls left hand side wheels (H-bridge connector J1 pin1)
@@ -27,17 +27,17 @@ GPIO.setwarnings(False)
 GPIO.output(7, False)
 GPIO.output(11, False)
 
-# ------------------ END GPIO INITIATION -----------------------
+# ---------------- END GPIO INITIATION -----------------------
 
-# ------Variables--------
+# -------------------- Variables -----------------------------
 t = 0.05  # run time
 servoStepLength = 0.5  # Set Step length for Servo
 stop = False
 
 
-# ---END Variables-------
+# ------------------- END Variables --------------------------
 
-# -------------------Start Car Class-------------------------------
+# ------------------- Start Car Class ------------------------
 
 
 class Car(object):
@@ -84,16 +84,16 @@ class Car(object):
             self.cameraDirection = 7.5  # middle
 
 
-# -------------------End Car Class------------------------------
+# ------------------- End Car Class------------------------------
 
-# ------------- Servo on startup -------------------------------
+# ----------------- Servo on startup ----------------------------
 servoPin = 12  # Servo signaling pin
 pwm = GPIO.PWM(servoPin, 50)
 pwm.start(7.5)  # Makes the servo point straight forward
 time.sleep(0.5)  # The time for the servo to straighten forward
 
 
-# ----------- END Servo on startup ------------------------------
+# ---------------- END Servo on startup -------------------------
 
 # -------Define class with GPIO instructions for driving---------
 
@@ -141,7 +141,7 @@ def stop_all():
     GPIO.output(15, 0)
 
 
-# ---END-Define class with GPIO instructions for driving---------
+# -------END-Define class with GPIO instructions for driving---------
 
 # --------------------- Driving direction list ----------------------
 
@@ -151,7 +151,7 @@ driving_direction_list = {'forward': drive_forward, 'backward': drive_backward,
 
 # --------------------- End Driving Direction List ------------------
 
-# -------------------- Start joystick control ---------------------
+# ---------------------- Start joystick control ---------------------
 
 
 def drive_direction(axis0, axis1):
@@ -174,9 +174,9 @@ def drive_direction(axis0, axis1):
         return 'stop'
 
 
-# ------------------- End Joystick control -------------------
+# ----------------------- End Joystick control -------------------
 
-# ----------Define quit game class -----------------
+# -----------------------Define quit game class ------------------
 def stop_program():
     """shuts down all running components of program"""
 
@@ -191,9 +191,9 @@ def stop_program():
     print ("Shutting down!")
 
 
-# --------END Define quit game class ----------------
+# ---------------------END Define quit game class ----------------
 
-# --------------Initialize game mode-------------------------
+# ------------------------ Initialize game mode ------------------
 
 pygame.init()
 pygame.joystick.init()
@@ -206,7 +206,7 @@ screen = pygame.display.set_mode((240, 240))
 pygame.display.set_caption('VR CAR')
 
 
-# ---------------- End Initialization --------------------------
+# ------------------------ End Initialization -------------------
 
 # ---------------- Main ------------------------
 
@@ -248,6 +248,9 @@ def main():
                     elif event.key == K_ESCAPE:
                         global stop
                         stop = True
+                elif event.type == pygame.QUIT:
+                    global stop
+                    stop = True
                 driving_direction_list[the_car.get_driving_direction()]()
                 # the_car.get_cellphone_orientation()
                 pwm.ChangeDutyCycle(the_car.get_camera_direction())
@@ -300,6 +303,10 @@ def main():
                 elif event.type == pygame.KEYUP:
                     the_car.set_driving_direction('stop')
                     print(the_car.get_driving_direction())
+
+                elif event.type == pygame.QUIT:
+                    global stop
+                    stop = True
 
                 driving_direction_list[the_car.get_driving_direction()]()
                 # the_car.get_cellphone_orientation()

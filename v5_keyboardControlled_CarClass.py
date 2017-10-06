@@ -219,11 +219,14 @@ def main():
             elif event.type == pygame.KEYUP:
                 the_car.set_driving_direction('stop')
                 print(the_car.get_driving_direction())
-				
+
+            elif event.type == pygame.QUIT:
+                global stop
+                stop = True
+
             drivingDirectionList[the_car.get_driving_direction()]()
             pwm.ChangeDutyCycle(the_car.get_camera_direction())
             time.sleep(0.05)
-
 
 # -------------------- END keyboard steering -----------------------
 
