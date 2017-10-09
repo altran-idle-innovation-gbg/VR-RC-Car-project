@@ -116,8 +116,8 @@ def drive_backward():
 def drive_left_pivot():
     GPIO.output(7, False)  # EN1 Disable RH wheels to spin
     GPIO.output(11, False)  # EN2 Disable LH wheels to spin
-    GPIO.output(13, forward)  # Enabels RH wheels to spin forward
-    GPIO.output(15, backward)  # Enabels LH wheels to spin backwards
+    GPIO.output(13, backward)  # Enabels RH wheels to spin forward
+    GPIO.output(15, forward)  # Enabels LH wheels to spin backwards
     GPIO.output(7, True)  # EN1 Enables RH wheels to spin
     GPIO.output(11, True)  # EN2 Enables LH wheels to spin
 
@@ -125,8 +125,8 @@ def drive_left_pivot():
 def drive_right_pivot():
     GPIO.output(7, False)  # EN1 Disable RH wheels to spin
     GPIO.output(11, False)  # EN2 Enables LH wheels to spin
-    GPIO.output(13, backward)  # Enabels RH wheels to spin backwards
-    GPIO.output(15, forward)  # Enabels LH wheels to spin forward
+    GPIO.output(13, forward)  # Enabels RH wheels to spin backwards
+    GPIO.output(15, backward)  # Enabels LH wheels to spin forward
     GPIO.output(7, True)  # EN1 Enables RH wheels to spin
     GPIO.output(11, True)  # EN2 Enables LH wheels to spin
 
@@ -154,22 +154,21 @@ driving_direction_list = {'forward': drive_forward, 'backward': drive_backward,
 def drive_direction(axis0, axis1):
     axis0 = int(round(axis0))
     axis1 = int(round(axis1))
-    if axis0 == 0 and axis1 == -1:
+    if axis0 == -1 and axis1 == 0:
         print ("Going Forward")
         return 'forward'
-    elif axis0 == 0 and axis1 == 1:
+    elif axis0 == 1 and axis1 == 0:
         print ("Going Backward")
         return 'backward'
-    elif axis0 == -1:
-        print ("Going LeftForward")
+    elif axis1 == 1:
+        print ("Going Left")
         return 'left'
-    elif axis0 == 1:
-        print ("Going RightForward")
+    elif axis1 == -1:
+        print ("Going Right")
         return 'right'
     else:
         print "stop"
         return 'stop'
-
 
 # ----------------------- End Joystick control -------------------
 
