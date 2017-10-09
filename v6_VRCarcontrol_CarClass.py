@@ -32,7 +32,6 @@ GPIO.output(11, False)
 # -------------------- Variables -----------------------------
 t = 0.05  # run time
 servoStepLength = 0.5  # Set Step length for Servo
-stop = False
 forward = False  # Constant to set the direction the wheels spin
 backward = True  # Constant to set the direction the wheels spin
 # ------------------- END Variables --------------------------
@@ -214,6 +213,7 @@ def main():
     speed can be set using number keys 1 - 9
     """
     the_car = Car()
+    stop = False
     while True:
         if stop:
             break
@@ -232,7 +232,7 @@ def main():
                     if event.button == 2:  # button B on joystick-VRBOX for camera turn LEFT
                         the_car.servo_turn_left()
                         print ("Camera turn left")
-                    if event.button == 1:  # button C on joystick-VRBOX for camera point STRAIGHT
+                    if event.button == 3:  # button C on joystick-VRBOX for camera point STRAIGHT
                         the_car.set_camera_direction(7.5)
                         print ("Camera point straight forward")
                     if event.button == 4:  # button A on joystick-VRBOX for camera turn RIGHT
@@ -242,10 +242,8 @@ def main():
                     if event.key == 32:
                         running = False
                     elif event.key == K_ESCAPE:
-                        global stop
                         stop = True
                 elif event.type == pygame.QUIT:
-                    global stop
                     stop = True
                 driving_direction_list[the_car.get_driving_direction()]()
                 # the_car.get_cellphone_orientation()
@@ -294,14 +292,12 @@ def main():
                         running = False
 
                     if event.key == K_ESCAPE:  # key <Esc> QUIT
-                        global stop
                         stop = True
                 elif event.type == pygame.KEYUP:
                     the_car.set_driving_direction('stop')
                     print(the_car.get_driving_direction())
 
                 elif event.type == pygame.QUIT:
-                    global stop
                     stop = True
 
                 driving_direction_list[the_car.get_driving_direction()]()
