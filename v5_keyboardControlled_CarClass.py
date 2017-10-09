@@ -110,8 +110,8 @@ def drive_backward():
 def drive_left_pivot():
     GPIO.output(7, False)  # EN1 Enables RH wheels to spin
     GPIO.output(11, False)  # EN2 Disable LH wheels to spin
-    GPIO.output(13, forward)  # Enabels RH wheels to spin forward
-    GPIO.output(15, backward)  # Enabels LH wheels to spin backwards
+    GPIO.output(13, backward)  # Enabels RH wheels to spin forward
+    GPIO.output(15, forward)  # Enabels LH wheels to spin backwards
     GPIO.output(7, True)  # EN1 Enables RH wheels to spin
     GPIO.output(11, True)  # EN2 Disable LH wheels to spin
 
@@ -119,8 +119,8 @@ def drive_left_pivot():
 def drive_right_pivot():
     GPIO.output(7, False)  # EN1 Disable RH wheels to spin
     GPIO.output(11, False)  # EN2 Enables LH wheels to spin
-    GPIO.output(13, backward)  # Enabels RH wheels to spin backwards
-    GPIO.output(15, forward)  # Enabels LH wheels to spin forward
+    GPIO.output(13, forward)  # Enabels RH wheels to spin backwards
+    GPIO.output(15, backward)  # Enabels LH wheels to spin forward
     GPIO.output(7, True)  # EN1 Disable RH wheels to spin
     GPIO.output(11, True)  # EN2 Enables LH wheels to spin
 
