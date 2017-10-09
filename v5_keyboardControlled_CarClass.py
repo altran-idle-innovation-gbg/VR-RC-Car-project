@@ -107,21 +107,21 @@ def drive_backward():
     GPIO.output(11, True)  # EN2 Enable LH wheels to spin
 
 
-def drive_left_forward():
+def drive_left_pivot():
     GPIO.output(7, False)  # EN1 Enables RH wheels to spin
     GPIO.output(11, False)  # EN2 Disable LH wheels to spin
     GPIO.output(13, forward)  # Enabels RH wheels to spin forward
     GPIO.output(15, backward)  # Enabels LH wheels to spin backwards
     GPIO.output(7, True)  # EN1 Enables RH wheels to spin
-    GPIO.output(11, False)  # EN2 Disable LH wheels to spin
+    GPIO.output(11, True)  # EN2 Disable LH wheels to spin
 
 
-def drive_right_forward():
+def drive_right_pivot():
     GPIO.output(7, False)  # EN1 Disable RH wheels to spin
     GPIO.output(11, False)  # EN2 Enables LH wheels to spin
     GPIO.output(13, backward)  # Enabels RH wheels to spin backwards
     GPIO.output(15, forward)  # Enabels LH wheels to spin forward
-    GPIO.output(7, False)  # EN1 Disable RH wheels to spin
+    GPIO.output(7, True)  # EN1 Disable RH wheels to spin
     GPIO.output(11, True)  # EN2 Enables LH wheels to spin
 
 
@@ -172,7 +172,7 @@ pygame.display.set_caption('VR CAR')
 
 # --------------------- Driving direction list ----------------------
 drivingDirectionList = {'forward': drive_forward, 'backward': drive_backward,
-                        'left': drive_left_forward, 'right': drive_right_forward, 'stop': stop_all}
+                        'left': drive_left_pivot, 'right': drive_right_pivot, 'stop': stop_all}
 
 
 # --------------------- keyboard steering -------------------------
