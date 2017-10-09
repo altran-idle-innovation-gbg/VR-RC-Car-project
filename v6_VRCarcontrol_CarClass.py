@@ -229,7 +229,7 @@ def main():
                     update_driving_direction = drive_direction(axis0, axis1)
                     the_car.set_driving_direction(update_driving_direction)
                 elif event.type == pygame.JOYBUTTONDOWN:
-                    if event.button == 2:  # button B on joystick-VRBOX for camera turn LEFT
+                    if event.button == 0:  # button B on joystick-VRBOX for camera turn LEFT
                         the_car.servo_turn_left()
                         print ("Camera turn left")
                     if event.button == 3:  # button C on joystick-VRBOX for camera point STRAIGHT
