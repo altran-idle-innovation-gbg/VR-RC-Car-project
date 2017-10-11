@@ -1,5 +1,6 @@
 # -------------------------------------------------------
 import socket, traceback
+import re
 
 host = '10.46.2.174'
 port = 5555
@@ -12,6 +13,11 @@ s.bind((host, port))
 while 1:
     try:
         message, address = s.recvfrom(8192)
+        var = message.split()
+        temp2 = str(var[3].strip())
+        temp3 = re.sub('[^0-9.-]', '', temp2)
+
+        # print (temp3)
         print message
     except (KeyboardInterrupt, SystemExit):
         raise

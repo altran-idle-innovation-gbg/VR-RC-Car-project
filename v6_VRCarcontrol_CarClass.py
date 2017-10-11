@@ -4,7 +4,7 @@ import time
 from pygame.locals import *
 import re
 import socket
-
+# titta vad
 # ------------------- Accelerometer --------------------
 host = ''
 port = 5555
