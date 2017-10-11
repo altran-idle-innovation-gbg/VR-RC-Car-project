@@ -4,7 +4,9 @@ import time
 from pygame.locals import *
 import re
 import socket
+import os
 
+"""
 # ------------------- Accelerometer --------------------
 host = ''
 port = 5555
@@ -13,6 +15,20 @@ s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 s.bind((host, port))
 # ----------------- End Accelerometer -------------------------------
+"""
+# ------------------ Communication with phone ----------------
+socket_path = '/tmp/uv4l.socket'
+
+try:
+    os.unlink(socket_path)
+except OSError:
+    if os.path.exists(socket_path):
+        raise
+
+s = socket.socket(socket.AF_UNIX, socket.SOCK_SEQPACKET)
+s.bind(socket_path)
+s.listen(1)
+# ----------------- end communication with phone -----------------
 
 # ------------------ GPIO INITIATION ------------------------
 
