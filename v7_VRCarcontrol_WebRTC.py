@@ -111,11 +111,11 @@ class Car(object):
             alpha_forward_diff2 = 360.0 + alpha - self.cameraForward
         else:
             alpha_forward_diff2 = -360.0 + alpha - self.cameraForward
-        if abs(alpha_forward_diff1) <= alpha_forward_diff2:
+        if abs(alpha_forward_diff1) <= abs(alpha_forward_diff2):
             alpha_forward_diff = alpha_forward_diff1
         else:
             alpha_forward_diff = alpha_forward_diff2
-        #self.set_camera_direction(alpha_forward_diff*5.0/90.0)
+        self.set_camera_direction(alpha_forward_diff*5.0/90.0)
 
 # ------------------- End Car Class------------------------------
 
@@ -226,7 +226,7 @@ def stop_program():
 # ---------------------END Define quit game class ----------------
 
 # ------------------------ Initialize game mode ------------------
-'''
+
 pygame.init()
 pygame.joystick.init()
 try:
@@ -236,7 +236,7 @@ except:
     pass
 screen = pygame.display.set_mode((240, 240))
 pygame.display.set_caption('VR CAR')
-'''
+
 
 # ------------------------ End Initialization -------------------
 
@@ -259,49 +259,52 @@ def main():
     while True:
         time.sleep(.05)
         data_in_string = connection.recv(4096)
-        print data_in_string
+        #print data_in_string
         try:
             data_in_json = json.loads(data_in_string)
             if stop:
                 break
-            if data_in_json.get('dm'):
+            if data_in_json.get('do'):
                 # call function to change servo direction
                 alpha_degrees = float(data_in_json.get('do').get('alpha'))
-                print alpha_degrees
-                the_car.calculated_duty_cycle(alpha_degrees)
-                print the_car.get_camera_direction()
+                the_car.calculate_duty_cycle(alpha_degrees)
+                #print the_car.get_camera_direction()
             elif data_in_json.get('keycodes'):
+               #print data_in_json.get('keycodes')
                 if data_in_json.get('keycodes') == keycode_forward:
                     the_car.set_driving_direction('forward')
                     check_things = 0
-                    print ("Going Forward")
+                    #print ("Going Forward")
                 elif data_in_json.get('keycodes') == keycode_backward:
                     the_car.set_driving_direction('backward')
                     check_things = 0
-                    print ("Going Backward")
+                    #print ("Going Backward")
                 elif data_in_json.get('keycodes') == keycode_left:
                     the_car.set_driving_direction('left')
                     check_things = 0
-                    print ("Going Left")
+                    #print ("Going Left")
                 elif data_in_json.get('keycodes') == keycode_right:
                     the_car.set_driving_direction('right')
                     check_things = 0
-                    print ("Going Right")
+                    #print ("Going Right")
                 elif data_in_json.get('keycodes') == keycode_calibrate_forward:
-                    the_car.set_cameraForward(alpha_degrees)
-                    print ("Recalibrating camera direction")
+                   #print 'this should work'
+                    the_car.set_camera_forward(alpha_degrees)
+                    #print ("Recalibrating camera direction")
             if check_things > 4:
-                stop_all()
-                print "stop"
+                the_car.set_driving_direction('stop')
+            for event in pygame.event.get():
+               if event.type == pygame.KEYDOWN:
+                  stop=true
+
             driving_direction_list[the_car.get_driving_direction()]()
             pwm.ChangeDutyCycle(the_car.get_camera_direction())
-            time.sleep(0.05)
+            print('the driving direction is: ',the_car.get_driving_direction())
+            print('the duty cycle is: ', the_car.get_camera_direction())
             check_things += 1
         except ValueError:
             if data_in_string == quit:
                 stop = True
-            else:
-                pass
         finally:
             stop_all()
 
