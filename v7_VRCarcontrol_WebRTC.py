@@ -53,12 +53,12 @@ forward = False  # Constant to set the direction the wheels spin
 backward = True  # Constant to set the direction the wheels spin
 MAX_DC = 9.5
 MIN_DC = 5.5
-keycode_forward = 103
-keycode_backward = 104
-keycode_left = 105
-keycode_right = 106
-keycode_calibrate_forward = 107
-keycode_quit = 108
+keycode_forward = [103]
+keycode_backward = [108]
+keycode_left = [105]
+keycode_right = [106]
+keycode_calibrate_forward = [28]
+keycode_quit = ""
 # ------------------- END Variables --------------------------
 
 # ------------------- Start Car Class ------------------------
@@ -80,17 +80,17 @@ class Car(object):
         return self.cameraDirection
 
     def set_camera_direction(self, camera_direction):
-        if camera_direction<MIN_DC:
+        if camera_direction < MIN_DC:
             self.cameraDirection = MIN_DC
-        elif camera_direction>MAX_DC:
+        elif camera_direction > MAX_DC:
             self.cameraDirection = MAX_DC
         else:
             self.cameraDirection = camera_direction
 
-    def set_cameraForward(self,cameraForward):
-        self.cameraForward=cameraForward
+    def set_camera_forward(self, camera_forward):
+        self.cameraForward = camera_forward
 
-    def get_cameraForward(self):
+    def get_camera_forward(self):
         return self.cameraForward
 
     def servo_turn_left(self):
@@ -105,14 +105,14 @@ class Car(object):
         else:
             print('Maximum Right turn acheived')
 
-    def calculate_duty_cycle(self,alpha):
+    def calculate_duty_cycle(self, alpha):
         alpha_forward_diff1 = alpha - self.cameraForward
-        if alpha_forward_diff1<0:
+        if alpha_forward_diff1 < 0:
             alpha_forward_diff2 = 360.0 + alpha - self.cameraForward
         else:
             alpha_forward_diff2 = -360.0 + alpha - self.cameraForward
-        if abs(alpha_forward_diff1)<=alpha_forward_diff2:
-            alpha_forward_diff=alpha_forward_diff1
+        if abs(alpha_forward_diff1) <= alpha_forward_diff2:
+            alpha_forward_diff = alpha_forward_diff1
         else:
             alpha_forward_diff = alpha_forward_diff2
         self.set_camera_direction(alpha_forward_diff*5.0/90.0)
@@ -127,6 +127,7 @@ time.sleep(0.5)  # The time for the servo to straighten forward
 # ---------------- END Servo on startup -------------------------
 
 # -------Define class with GPIO instructions for driving---------
+
 
 def drive_forward():
     GPIO.output(7, False)  # EN1 Disable RH wheels to spin
@@ -206,18 +207,20 @@ def drive_direction(axis0, axis1):
 # ----------------------- End Joystick control -------------------
 
 # -----------------------Define quit game class ------------------
+
+
 def stop_program():
     """shuts down all running components of program"""
-
-    try:
-        joyStick.quit()
-    except:
-        pass
-
     stop_all()
     pwm.stop()
     GPIO.cleanup()
     print ("Shutting down!")
+'''
+    try:
+        joyStick.quit()
+    except:
+        pass
+'''
 
 
 # ---------------------END Define quit game class ----------------
@@ -250,75 +253,53 @@ def main():
     connection, client_address = s.accept()
     the_car = Car()
     stop = False
+    alpha_degrees = 180
+    check_things = 5
     while True:
-        if stop:
-            break
-        running = True
-        while running:
-            time.sleep(.05)
-            data_in_string = connection.recv(4096)
+        time.sleep(.05)
+        data_in_string = connection.recv(4096)
+        try:
             data_in_json = json.loads(data_in_string)
-
-
             if stop:
                 break
-
             if data_in_json.get('dm'):
                 # call function to change servo direction
                 alpha_degrees = float(data_in_json.get('do').get('alpha'))
                 the_car.calculated_duty_cycle(alpha_degrees)
             elif data_in_json.get('keycodes'):
-                # set driving direction
-                if data_in_json.get('keycodes')==keycode_forward:
+                if data_in_json.get('keycodes') == keycode_forward:
                     the_car.set_driving_direction('forward')
-                elif data_in_json.get('keycodes')==keycode_backward:
+                    check_things = 0
+                    print ("Going Forward")
+                elif data_in_json.get('keycodes') == keycode_backward:
                     the_car.set_driving_direction('backward')
-                elif data_in_json.get('keycodes')==keycode_left:
+                    check_things = 0
+                    print ("Going Backward")
+                elif data_in_json.get('keycodes') == keycode_left:
                     the_car.set_driving_direction('left')
-                elif data_in_json.get('keycodes')==keycode_right:
+                    check_things = 0
+                    print ("Going Left")
+                elif data_in_json.get('keycodes') == keycode_right:
                     the_car.set_driving_direction('right')
-                elif data_in_json.get('keycodes')==keycode_calibrate_forward:
-                    # set new angle to forward
-
-                if data_in_json.get('keycodes')==keycode_quit:
-                    stop=True
-
+                    check_things = 0
+                    print ("Going Right")
+                elif data_in_json.get('keycodes') == keycode_calibrate_forward:
+                    the_car.set_cameraForward(alpha_degrees)
+                    print ("Recalibrating camera direction")
+            if check_things > 4:
+                stop_all()
             driving_direction_list[the_car.get_driving_direction()]()
             pwm.ChangeDutyCycle(the_car.get_camera_direction())
             time.sleep(0.05)
-        stop_all()
-        '''
-            for event in pygame.event.get():
-                if event.type == pygame.JOYAXISMOTION:
-                    axis0 = joyStick.get_axis(0)
-                    axis1 = joyStick.get_axis(1)
-                    update_driving_direction = drive_direction(axis0, axis1)
-                    the_car.set_driving_direction(update_driving_direction)
-                elif event.type == pygame.JOYBUTTONDOWN:
-                    if event.button == 0:  # button B on joystick-VRBOX for camera turn LEFT
-                        the_car.servo_turn_left()
-                        print ("Camera turn left")
-                    if event.button == 3:  # button C on joystick-VRBOX for camera point STRAIGHT
-                        the_car.set_camera_direction(7.5)
-                        print ("Camera point straight forward")
-                    if event.button == 4:  # button A on joystick-VRBOX for camera turn RIGHT
-                        the_car.servo_turn_right()
-                        print ("Camera turn right")
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == 32:
-                        running = False
-                    elif event.key == K_ESCAPE:
-                        stop = True
-                elif event.type == pygame.QUIT:
-                    stop = True
-                driving_direction_list[the_car.get_driving_direction()]()
-                # the_car.get_cellphone_orientation()
-                pwm.ChangeDutyCycle(the_car.get_camera_direction())
-                time.sleep(0.05)
+            check_things += 1
+        except ValueError:
+            if data_in_string == quit:
+                stop = True
+            else:
+                pass
+        finally:
+            stop_all()
 
-        stop_all()
-
-'''
 # ------------------------End Main---------------------------------------
 
 if __name__ == "__main__":
