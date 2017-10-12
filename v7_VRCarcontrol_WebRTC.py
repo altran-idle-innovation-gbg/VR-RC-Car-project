@@ -115,7 +115,6 @@ class Car(object):
             alpha_forward_diff = alpha_forward_diff1
         else:
             alpha_forward_diff = alpha_forward_diff2
-        print('new alpha diff: ',alpha_forward_diff, ' new duty cycle: ', (7.5+alpha_forward_diff*2.5/90.0))
         self.set_camera_direction(7.5+alpha_forward_diff*2.5/90.0)
 
 # ------------------- End Car Class------------------------------
@@ -167,10 +166,10 @@ def drive_right_pivot():
 
 
 def stop_all():
-    GPIO.output(7, 0)
-    GPIO.output(11, 0)
-    GPIO.output(13, 0)
-    GPIO.output(15, 0)
+    GPIO.output(7, False)
+    GPIO.output(11, False)
+    GPIO.output(13, False)
+    GPIO.output(15, False)
 
 
 # -------END-Define class with GPIO instructions for driving---------
@@ -259,7 +258,7 @@ def main():
     check_things = 5
     while True:
         time.sleep(.05)
-        data_in_string = connection.recv(4096)
+        data_in_string = connection.recv(256)
         #print data_in_string
         try:
             data_in_json = json.loads(data_in_string)
@@ -283,7 +282,6 @@ def main():
                     check_things = 0
                 elif data_in_json.get('keycodes') == keycode_calibrate_forward:
                     the_car.set_camera_forward(alpha_degrees)
-                    print ("Recalibrating camera direction")
             if check_things > 4:
                 the_car.set_driving_direction('stop')
             for event in pygame.event.get():
@@ -292,15 +290,10 @@ def main():
 
             driving_direction_list[the_car.get_driving_direction()]()
             pwm.ChangeDutyCycle(the_car.get_camera_direction())
-            print('The driving direction is: ',the_car.get_driving_direction())
-            print('The duty cycle is: ',the_car.get_camera_direction())
-            print('the reference angle is: ',the_car.get_camera_forward())
             check_things += 1
         except ValueError:
             if data_in_string == quit:
                 stop = True
-        finally:
-            stop_all()
 
 # ------------------------End Main---------------------------------------
 
