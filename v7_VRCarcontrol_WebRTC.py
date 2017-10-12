@@ -268,12 +268,16 @@ def main():
                 # call function to change servo direction
                 alpha_degrees = float(data_in_json.get('do').get('alpha'))
                 the_car.calculate_duty_cycle(alpha_degrees)
+<<<<<<< HEAD
                 #print the_car.get_camera_direction()
+=======
+>>>>>>> 8e2070d30975c493cc5f7633fbd66c36e1c900f4
             elif data_in_json.get('keycodes'):
                #print data_in_json.get('keycodes')
                 if data_in_json.get('keycodes') == keycode_forward:
                     the_car.set_driving_direction('forward')
                     check_things = 0
+<<<<<<< HEAD
                     #print ("Going Forward")
                 elif data_in_json.get('keycodes') == keycode_backward:
                     the_car.set_driving_direction('backward')
@@ -301,6 +305,32 @@ def main():
             pwm.ChangeDutyCycle(the_car.get_camera_direction())
             print('the driving direction is: ',the_car.get_driving_direction())
             print('the duty cycle is: ', the_car.get_camera_direction())
+=======
+                elif data_in_json.get('keycodes') == keycode_backward:
+                    the_car.set_driving_direction('backward')
+                    check_things = 0
+                elif data_in_json.get('keycodes') == keycode_left:
+                    the_car.set_driving_direction('left')
+                    check_things = 0
+                elif data_in_json.get('keycodes') == keycode_right:
+                    the_car.set_driving_direction('right')
+                    check_things = 0
+                elif data_in_json.get('keycodes') == keycode_calibrate_forward:
+                    the_car.set_camera_forward(alpha_degrees)
+                    print ("Recalibrating camera direction")
+            if check_things > 4:
+                the_car.set_driving_direction('stop')
+                print "stop"
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN
+                    stop = True
+
+            driving_direction_list[the_car.get_driving_direction()]()
+            pwm.ChangeDutyCycle(the_car.get_camera_direction())
+            print('The driving direction is: ',the_car.get_driving_direction())
+            print('The duty cycle is: ',the_car.get_camera_direction())
+            print('the reference angle is: ',the_car.get_camera_forward())
+>>>>>>> 8e2070d30975c493cc5f7633fbd66c36e1c900f4
             check_things += 1
         except ValueError:
             if data_in_string == quit:
