@@ -288,6 +288,7 @@ def main():
                     print ("Recalibrating camera direction")
             if check_things > 4:
                 stop_all()
+                print "stop"
             driving_direction_list[the_car.get_driving_direction()]()
             pwm.ChangeDutyCycle(the_car.get_camera_direction())
             time.sleep(0.05)
