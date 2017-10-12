@@ -259,7 +259,7 @@ def main():
     while True:
         time.sleep(.05)
         data_in_string = connection.recv(256)
-        #print data_in_string
+        print data_in_string
         try:
             data_in_json = json.loads(data_in_string)
             if stop:
