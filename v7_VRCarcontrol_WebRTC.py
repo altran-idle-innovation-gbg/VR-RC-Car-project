@@ -265,6 +265,11 @@ def main():
                 break
             if data_in_json.get('do'):
                 alpha_degrees = float(data_in_json.get('do').get('alpha'))
+                gamma_degrees = float(data_in_json.get('do').get('gamma'))
+                if gamma_degrees < 0:
+                    alpha_degrees -= 180
+                    if alpha_degrees < 0:
+                        alpha_degrees += 360
                 the_car.calculate_duty_cycle(alpha_degrees)
             elif data_in_json.get('keycodes'):
                 if data_in_json.get('keycodes') == keycode_forward:
