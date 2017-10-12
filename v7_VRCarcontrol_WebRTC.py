@@ -267,6 +267,7 @@ def main():
             if data_in_json.get('dm'):
                 # call function to change servo direction
                 alpha_degrees = float(data_in_json.get('do').get('alpha'))
+                print alpha_degrees
                 the_car.calculated_duty_cycle(alpha_degrees)
             elif data_in_json.get('keycodes'):
                 if data_in_json.get('keycodes') == keycode_forward:
