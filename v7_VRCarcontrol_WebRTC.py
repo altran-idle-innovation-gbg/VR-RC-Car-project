@@ -251,6 +251,7 @@ def main():
     """
     print 'awaiting connection...'
     connection, client_address = s.accept()
+    print client_address
     the_car = Car()
     stop = False
     alpha_degrees = 180
@@ -258,6 +259,7 @@ def main():
     while True:
         time.sleep(.05)
         data_in_string = connection.recv(4096)
+        print data_in_string
         try:
             data_in_json = json.loads(data_in_string)
             if stop:
