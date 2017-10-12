@@ -115,7 +115,7 @@ class Car(object):
             alpha_forward_diff = alpha_forward_diff1
         else:
             alpha_forward_diff = alpha_forward_diff2
-        self.set_camera_direction(alpha_forward_diff*5.0/90.0)
+        self.set_camera_direction(7.5+alpha_forward_diff*2.5/90.0)
 
 # ------------------- End Car Class------------------------------
 
@@ -288,7 +288,7 @@ def main():
                 the_car.set_driving_direction('stop')
                 print "stop"
             for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN
+                if event.type == pygame.KEYDOWN:
                     stop = True
 
             driving_direction_list[the_car.get_driving_direction()]()
