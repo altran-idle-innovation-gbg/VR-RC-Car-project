@@ -5,6 +5,7 @@ from pygame.locals import *
 import re
 import socket
 import os
+import json
 
 """
 # ------------------- Accelerometer --------------------
@@ -50,6 +51,14 @@ t = 0.05  # run time
 servoStepLength = 0.5  # Set Step length for Servo
 forward = False  # Constant to set the direction the wheels spin
 backward = True  # Constant to set the direction the wheels spin
+MAX_DC = 9.5
+MIN_DC = 5.5
+keycode_forward = 103
+keycode_backward = 104
+keycode_left = 105
+keycode_right = 106
+keycode_calibrate_forward = 107
+keycode_quit = 108
 # ------------------- END Variables --------------------------
 
 # ------------------- Start Car Class ------------------------
@@ -59,6 +68,7 @@ class Car(object):
     def __init__(self):
         self.drivingDirection = "stop"
         self.cameraDirection = 7.5
+        self.cameraForward = 180.0
 
     def get_driving_direction(self):
         return self.drivingDirection
@@ -70,34 +80,42 @@ class Car(object):
         return self.cameraDirection
 
     def set_camera_direction(self, camera_direction):
-        self.cameraDirection = camera_direction
+        if camera_direction<MIN_DC:
+            self.cameraDirection = MIN_DC
+        elif camera_direction>MAX_DC:
+            self.cameraDirection = MAX_DC
+        else:
+            self.cameraDirection = camera_direction
+
+    def set_cameraForward(self,cameraForward):
+        self.cameraForward=cameraForward
+
+    def get_cameraForward(self):
+        return self.cameraForward
 
     def servo_turn_left(self):
-        if self.cameraDirection >= 5.5 + servoStepLength:
+        if self.cameraDirection >= MIN_DC + servoStepLength:
             self.cameraDirection -= servoStepLength
         else:
             print('Maximum Left turn acheived')
 
     def servo_turn_right(self):
-        if self.cameraDirection <= 9.5 - servoStepLength:
+        if self.cameraDirection <= MAX_DC - servoStepLength:
             self.cameraDirection += servoStepLength
         else:
             print('Maximum Right turn acheived')
 
-    def get_cellphone_orientation(self):
-        message, address = s.recvfrom(8192)
-        var = message.split()
-        temp2 = str(var[3].strip())
-        temp3 = re.sub('[^0-9.-]', '', temp2)
-        acc = float(temp3)
-
-        if -3.0 < acc < -1.0:
-            self.cameraDirection = 5.5  # left
-        elif 1.0 < acc < 3.0:
-            self.cameraDirection = 9.5  # right
-        elif -1.0 <= acc <= 1.0:
-            self.cameraDirection = 7.5  # middle
-
+    def calculate_duty_cycle(self,alpha):
+        alpha_forward_diff1 = alpha - self.cameraForward
+        if alpha_forward_diff1<0:
+            alpha_forward_diff2 = 360.0 + alpha - self.cameraForward
+        else:
+            alpha_forward_diff2 = -360.0 + alpha - self.cameraForward
+        if abs(alpha_forward_diff1)<=alpha_forward_diff2:
+            alpha_forward_diff=alpha_forward_diff1
+        else:
+            alpha_forward_diff = alpha_forward_diff2
+        self.set_camera_direction(alpha_forward_diff*5.0/90.0)
 
 # ------------------- End Car Class------------------------------
 
@@ -205,7 +223,7 @@ def stop_program():
 # ---------------------END Define quit game class ----------------
 
 # ------------------------ Initialize game mode ------------------
-
+'''
 pygame.init()
 pygame.joystick.init()
 try:
@@ -215,7 +233,7 @@ except:
     pass
 screen = pygame.display.set_mode((240, 240))
 pygame.display.set_caption('VR CAR')
-
+'''
 
 # ------------------------ End Initialization -------------------
 
@@ -228,6 +246,8 @@ def main():
     controls by pressing the <space> key. while using keyboard controls,
     speed can be set using number keys 1 - 9
     """
+    print 'awaiting connection...'
+    connection, client_address = s.accept()
     the_car = Car()
     stop = False
     while True:
@@ -235,9 +255,39 @@ def main():
             break
         running = True
         while running:
-            time.sleep(.02)
+            time.sleep(.05)
+            data_in_string = connection.recv(4096)
+            data_in_json = json.loads(data_in_string)
+
+
             if stop:
                 break
+
+            if data_in_json.get('dm'):
+                # call function to change servo direction
+                alpha_degrees = float(data_in_json.get('do').get('alpha'))
+                the_car.calculated_duty_cycle(alpha_degrees)
+            elif data_in_json.get('keycodes'):
+                # set driving direction
+                if data_in_json.get('keycodes')==keycode_forward:
+                    the_car.set_driving_direction('forward')
+                elif data_in_json.get('keycodes')==keycode_backward:
+                    the_car.set_driving_direction('backward')
+                elif data_in_json.get('keycodes')==keycode_left:
+                    the_car.set_driving_direction('left')
+                elif data_in_json.get('keycodes')==keycode_right:
+                    the_car.set_driving_direction('right')
+                elif data_in_json.get('keycodes')==keycode_calibrate_forward:
+                    # set new angle to forward
+
+                if data_in_json.get('keycodes')==keycode_quit:
+                    stop=True
+
+            driving_direction_list[the_car.get_driving_direction()]()
+            pwm.ChangeDutyCycle(the_car.get_camera_direction())
+            time.sleep(0.05)
+        stop_all()
+        '''
             for event in pygame.event.get():
                 if event.type == pygame.JOYAXISMOTION:
                     axis0 = joyStick.get_axis(0)
@@ -268,60 +318,7 @@ def main():
 
         stop_all()
 
-        running = True
-        while running:
-            time.sleep(.02)
-            if stop:
-                break
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    if event.key == 32:  # key <SPACE> Stop motors / Break
-                        stop_all()
-                    if event.key == K_w:  # key <W> Move forward
-                        the_car.set_driving_direction('forward')
-                        print(the_car.get_driving_direction())
-                    if event.key == K_s:  # key <S> Move backward
-                        the_car.set_driving_direction('backward')
-                        print(the_car.get_driving_direction())
-                    if event.key == K_a:  # key <A> Move left
-                        the_car.set_driving_direction('left')
-                        print(the_car.get_driving_direction())
-                    if event.key == K_d:  # key <D> Move right
-                        the_car.set_driving_direction('right')
-                        print(the_car.get_driving_direction())
-
-                    if event.key == K_q:  # key <Q> Turn servo left
-                        the_car.set_camera_direction(5.5)
-                    if event.key == K_r:  # key <R> Turn servo right
-                        the_car.set_camera_direction(9.5)
-                    if event.key == K_e:  # key <E> Turn servo straight forward
-                        the_car.set_camera_direction(7.5)
-
-                    if event.key == K_c:
-                        the_car.servo_turn_left()
-                        print('Camera Direction DC = ', the_car.get_camera_direction())
-                    if event.key == K_v:
-                        the_car.servo_turn_right()
-                        print('Camera Direction DC = ', the_car.get_camera_direction())
-
-                    if event.key == 32:
-                        running = False
-
-                    if event.key == K_ESCAPE:  # key <Esc> QUIT
-                        stop = True
-                elif event.type == pygame.KEYUP:
-                    the_car.set_driving_direction('stop')
-                    print(the_car.get_driving_direction())
-
-                elif event.type == pygame.QUIT:
-                    stop = True
-
-                driving_direction_list[the_car.get_driving_direction()]()
-                # the_car.get_cellphone_orientation()
-                pwm.ChangeDutyCycle(the_car.get_camera_direction())
-                time.sleep(0.05)
-
-
+'''
 # ------------------------End Main---------------------------------------
 
 if __name__ == "__main__":
