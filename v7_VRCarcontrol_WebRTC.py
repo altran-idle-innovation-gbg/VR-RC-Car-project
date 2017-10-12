@@ -294,6 +294,7 @@ def main():
 
             driving_direction_list[the_car.get_driving_direction()]()
             pwm.ChangeDutyCycle(the_car.get_camera_direction())
+            print the_car.get_camera_direction()
             check_things += 1
         except ValueError:
             if data_in_string == quit:
