@@ -257,7 +257,6 @@ def main():
     alpha_degrees = 180
     check_things = 5
     while True:
-        time.sleep(.05)
         data_in_string = connection.recv(256)
         print data_in_string
         try:
