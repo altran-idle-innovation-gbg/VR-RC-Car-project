@@ -269,6 +269,7 @@ def main():
                 alpha_degrees = float(data_in_json.get('do').get('alpha'))
                 print alpha_degrees
                 the_car.calculated_duty_cycle(alpha_degrees)
+                print the_car.get_camera_direction()
             elif data_in_json.get('keycodes'):
                 if data_in_json.get('keycodes') == keycode_forward:
                     the_car.set_driving_direction('forward')
