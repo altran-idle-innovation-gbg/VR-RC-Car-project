@@ -115,7 +115,7 @@ class Car(object):
             alpha_forward_diff = alpha_forward_diff1
         else:
             alpha_forward_diff = alpha_forward_diff2
-        self.set_camera_direction(alpha_forward_diff*5.0/90.0)
+        #self.set_camera_direction(alpha_forward_diff*5.0/90.0)
 
 # ------------------- End Car Class------------------------------
 
