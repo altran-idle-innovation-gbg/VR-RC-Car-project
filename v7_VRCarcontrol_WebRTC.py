@@ -7,16 +7,7 @@ import socket
 import os
 import json
 
-"""
-# ------------------- Accelerometer --------------------
-host = ''
-port = 5555
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-s.bind((host, port))
-# ----------------- End Accelerometer -------------------------------
-"""
+
 # ------------------ Communication with phone ----------------
 socket_path = '/tmp/uv4l.socket'
 
@@ -215,12 +206,6 @@ def stop_program():
     pwm.stop()
     GPIO.cleanup()
     print ("Shutting down!")
-'''
-    try:
-        joyStick.quit()
-    except:
-        pass
-'''
 
 
 # ---------------------END Define quit game class ----------------
@@ -297,7 +282,7 @@ def main():
             print the_car.get_camera_direction()
             check_things += 1
         except ValueError:
-            if data_in_string == quit:
+            if data_in_string == 'quit':
                 stop = True
 
 # ------------------------End Main---------------------------------------
