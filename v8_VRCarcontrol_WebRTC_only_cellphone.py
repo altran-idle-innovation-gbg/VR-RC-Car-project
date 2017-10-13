@@ -7,16 +7,6 @@ import socket
 import os
 import json
 
-"""
-# ------------------- Accelerometer --------------------
-host = ''
-port = 5555
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-s.bind((host, port))
-# ----------------- End Accelerometer -------------------------------
-"""
 # ------------------ Communication with phone ----------------
 socket_path = '/tmp/uv4l.socket'
 
@@ -51,14 +41,13 @@ t = 0.05  # run time
 servoStepLength = 0.5  # Set Step length for Servo
 forward = False  # Constant to set the direction the wheels spin
 backward = True  # Constant to set the direction the wheels spin
-MAX_DC = 9.5
-MIN_DC = 5.5
-keycode_forward = [103]
-keycode_backward = [108]
-keycode_left = [105]
-keycode_right = [106]
-keycode_calibrate_forward = [28]
-keycode_quit = ""
+MAX_DC = 9.5  # set boundary for maximum duty cycle for the Servo
+MIN_DC = 5.5  # set boundary for minimum duty cycle for the Servo
+keycode_forward = [103]  # set key code for driving forward
+keycode_backward = [108]  # set key code for driving backward
+keycode_left = [105]  # set key code for turning left
+keycode_right = [106]  # set key code for turning right
+keycode_calibrate_forward = [28]  # set key code for calibrating forward servo direction
 # ------------------- END Variables --------------------------
 
 # ------------------- Start Car Class ------------------------
@@ -92,18 +81,6 @@ class Car(object):
 
     def get_camera_forward(self):
         return self.cameraForward
-
-    def servo_turn_left(self):
-        if self.cameraDirection >= MIN_DC + servoStepLength:
-            self.cameraDirection -= servoStepLength
-        else:
-            print('Maximum Left turn acheived')
-
-    def servo_turn_right(self):
-        if self.cameraDirection <= MAX_DC - servoStepLength:
-            self.cameraDirection += servoStepLength
-        else:
-            print('Maximum Right turn acheived')
 
     def calculate_duty_cycle(self, alpha):
         alpha_forward_diff1 = alpha - self.cameraForward
@@ -225,21 +202,6 @@ def stop_program():
 
 # ---------------------END Define quit game class ----------------
 
-# ------------------------ Initialize game mode ------------------
-
-pygame.init()
-pygame.joystick.init()
-try:
-    joyStick = pygame.joystick.Joystick(0)
-    joyStick.init()
-except:
-    pass
-screen = pygame.display.set_mode((240, 240))
-pygame.display.set_caption('VR CAR')
-
-
-# ------------------------ End Initialization -------------------
-
 # ---------------- Main ------------------------
 
 
@@ -258,7 +220,6 @@ def main():
     check_things = 5
     while True:
         data_in_string = connection.recv(256)
-        print data_in_string
         try:
             data_in_json = json.loads(data_in_string)
             if stop:
@@ -288,13 +249,11 @@ def main():
                     the_car.set_camera_forward(alpha_degrees)
             if check_things > 4:
                 the_car.set_driving_direction('stop')
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    stop = True
+            if data_in_string.lower() == quit:
+                stop = True
 
             driving_direction_list[the_car.get_driving_direction()]()
             pwm.ChangeDutyCycle(the_car.get_camera_direction())
-            print the_car.get_camera_direction()
             check_things += 1
         except ValueError:
             if data_in_string == quit:
