@@ -48,6 +48,7 @@ keycode_backward = [108]  # set key code for driving backward
 keycode_left = [105]  # set key code for turning left
 keycode_right = [106]  # set key code for turning right
 keycode_calibrate_forward = [28]  # set key code for calibrating forward servo direction
+quit_command='quit'
 # ------------------- END Variables --------------------------
 
 # ------------------- Start Car Class ------------------------
@@ -192,12 +193,6 @@ def stop_program():
     pwm.stop()
     GPIO.cleanup()
     print ("Shutting down!")
-'''
-    try:
-        joyStick.quit()
-    except:
-        pass
-'''
 
 
 # ---------------------END Define quit game class ----------------
@@ -219,11 +214,12 @@ def main():
     alpha_degrees = 180
     check_things = 5
     while True:
+        if stop:
+            break
+        
         data_in_string = connection.recv(256)
         try:
             data_in_json = json.loads(data_in_string)
-            if stop:
-                break
             if data_in_json.get('do'):
                 alpha_degrees = float(data_in_json.get('do').get('alpha'))
                 gamma_degrees = float(data_in_json.get('do').get('gamma'))
@@ -249,16 +245,13 @@ def main():
                     the_car.set_camera_forward(alpha_degrees)
             if check_things > 4:
                 the_car.set_driving_direction('stop')
-            if data_in_string.lower() == quit:
-                stop = True
 
             driving_direction_list[the_car.get_driving_direction()]()
             pwm.ChangeDutyCycle(the_car.get_camera_direction())
             check_things += 1
         except ValueError:
-            if data_in_string == quit:
+            if data_in_string == 'quit':
                 stop = True
-
 # ------------------------End Main---------------------------------------
 
 if __name__ == "__main__":
