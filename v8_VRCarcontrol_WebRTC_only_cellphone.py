@@ -8,6 +8,7 @@ import os
 import json
 
 # ------------------ Communication with phone ----------------
+"""Setup of the communication servo through the webrtc server"""
 socket_path = '/tmp/uv4l.socket'
 
 try:
@@ -48,11 +49,11 @@ keycode_backward = [108]  # set key code for driving backward
 keycode_left = [105]  # set key code for turning left
 keycode_right = [106]  # set key code for turning right
 keycode_calibrate_forward = [28]  # set key code for calibrating forward servo direction
-quit_command='quit'
+quit_command = 'quit'
 # ------------------- END Variables --------------------------
 
 # ------------------- Start Car Class ------------------------
-
+"""The Car class is used to keep track of the car settings."""
 
 class Car(object):
     def __init__(self):
@@ -98,6 +99,8 @@ class Car(object):
 # ------------------- End Car Class------------------------------
 
 # ----------------- Servo on startup ----------------------------
+"""The Servo is started, and later only the duty cycle is changed to
+direct the cameras in different directions"""
 servoPin = 12  # Servo signaling pin
 pwm = GPIO.PWM(servoPin, 50)
 pwm.start(7.5)  # Makes the servo point straight forward
@@ -105,6 +108,8 @@ time.sleep(0.5)  # The time for the servo to straighten forward
 # ---------------- END Servo on startup -------------------------
 
 # -------Define class with GPIO instructions for driving---------
+"""Functions to drive the Car. Because how the h-bridge is designed, the motors need to be
+disabled before changing the driving directions of the motors."""
 
 
 def drive_forward():
@@ -153,36 +158,12 @@ def stop_all():
 # -------END-Define class with GPIO instructions for driving---------
 
 # --------------------- Driving direction list ----------------------
-
+"""The driving list is later used as a look up table to call the driving functions."""
 driving_direction_list = {'forward': drive_forward, 'backward': drive_backward,
                           'left': drive_left_pivot, 'right': drive_right_pivot, 'stop': stop_all}
 
 
 # --------------------- End Driving Direction List ------------------
-
-# ---------------------- Start joystick control ---------------------
-
-
-def drive_direction(axis0, axis1):
-    axis0 = int(round(axis0))
-    axis1 = int(round(axis1))
-    if axis0 == -1 and axis1 == 0:
-        print ("Going Forward")
-        return 'forward'
-    elif axis0 == 1 and axis1 == 0:
-        print ("Going Backward")
-        return 'backward'
-    elif axis1 == 1:
-        print ("Going Left")
-        return 'left'
-    elif axis1 == -1:
-        print ("Going Right")
-        return 'right'
-    else:
-        print "stop"
-        return 'stop'
-
-# ----------------------- End Joystick control -------------------
 
 # -----------------------Define quit game class ------------------
 
@@ -237,10 +218,10 @@ def main():
                     check_things = 0
                 elif data_in_json.get('keycodes') == keycode_left:
                     the_car.set_driving_direction('left')
-                    check_things = 4
+                    check_things = 3
                 elif data_in_json.get('keycodes') == keycode_right:
                     the_car.set_driving_direction('right')
-                    check_things = 4
+                    check_things = 3
                 elif data_in_json.get('keycodes') == keycode_calibrate_forward:
                     the_car.set_camera_forward(alpha_degrees)
             if check_things > 4:
