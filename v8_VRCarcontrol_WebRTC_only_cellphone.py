@@ -39,6 +39,7 @@ GPIO.output(11, False)
 
 # -------------------- Variables -----------------------------
 t = 0.05  # run time
+servoPin = 12  # Servo signaling pin
 servoStepLength = 0.5  # Set Step length for Servo
 forward = False  # Constant to set the direction the wheels spin
 backward = True  # Constant to set the direction the wheels spin
@@ -86,14 +87,17 @@ class Car(object):
 
     def calculate_duty_cycle(self, alpha):
         alpha_forward_diff1 = alpha - self.cameraForward
+
         if alpha_forward_diff1 < 0:
             alpha_forward_diff2 = 360.0 + alpha - self.cameraForward
         else:
             alpha_forward_diff2 = -360.0 + alpha - self.cameraForward
+
         if abs(alpha_forward_diff1) <= abs(alpha_forward_diff2):
             alpha_forward_diff = alpha_forward_diff1
         else:
             alpha_forward_diff = alpha_forward_diff2
+
         self.set_camera_direction(7.5-alpha_forward_diff*2.5/90.0)
 
 # ------------------- End Car Class------------------------------
@@ -101,10 +105,12 @@ class Car(object):
 # ----------------- Servo on startup ----------------------------
 """The Servo is started, and later only the duty cycle is changed to
 direct the cameras in different directions"""
-servoPin = 12  # Servo signaling pin
-pwm = GPIO.PWM(servoPin, 50)
-pwm.start(7.5)  # Makes the servo point straight forward
-time.sleep(0.5)  # The time for the servo to straighten forward
+
+
+def initialize_servo():
+    pwm = GPIO.PWM(servoPin, 50)
+    pwm.start(7.5)  # Makes the servo point straight forward
+    time.sleep(0.5)  # The time for the servo to straighten forward
 # ---------------- END Servo on startup -------------------------
 
 # -------Define class with GPIO instructions for driving---------
@@ -187,52 +193,58 @@ def main():
     controls by pressing the <space> key. while using keyboard controls,
     speed can be set using number keys 1 - 9
     """
-    print 'awaiting connection...'
-    connection, client_address = s.accept()
-    print client_address
     the_car = Car()
-    stop = False
     alpha_degrees = 180
-    check_things = 5
+    iteration_control = 0
     while True:
-        if stop:
-            break
-        
-        data_in_string = connection.recv(256)
-        try:
-            data_in_json = json.loads(data_in_string)
-            if data_in_json.get('do'):
-                alpha_degrees = float(data_in_json.get('do').get('alpha'))
-                gamma_degrees = float(data_in_json.get('do').get('gamma'))
-                if gamma_degrees < 0:
-                    alpha_degrees -= 180
-                    if alpha_degrees < 0:
-                        alpha_degrees += 360
-                the_car.calculate_duty_cycle(alpha_degrees)
-            elif data_in_json.get('keycodes'):
-                if data_in_json.get('keycodes') == keycode_forward:
-                    the_car.set_driving_direction('forward')
-                    check_things = 0
-                elif data_in_json.get('keycodes') == keycode_backward:
-                    the_car.set_driving_direction('backward')
-                    check_things = 0
-                elif data_in_json.get('keycodes') == keycode_left:
-                    the_car.set_driving_direction('left')
-                    check_things = 3
-                elif data_in_json.get('keycodes') == keycode_right:
-                    the_car.set_driving_direction('right')
-                    check_things = 3
-                elif data_in_json.get('keycodes') == keycode_calibrate_forward:
-                    the_car.set_camera_forward(alpha_degrees)
-            if check_things > 4:
-                the_car.set_driving_direction('stop')
+        print 'awaiting connection...'
+        connection, client_address = s.accept()
+        print client_address
+        initialize_servo()
+        stop = False
+        while True:
+            if stop:
+                pwm.stop()
+                stop_all()
+                connection.send('Connection aborted, will reconnect in 15s if call not hanged up.')
+                connection.close()
+                time.sleep(15)
+                break
+            data_in_string = connection.recv(256)
+            try:
+                data_in_json = json.loads(data_in_string)
+                if data_in_json.get('do'):
+                    alpha_degrees = float(data_in_json.get('do').get('alpha'))
+                    gamma_degrees = float(data_in_json.get('do').get('gamma'))
+                    if gamma_degrees < 0:
+                        alpha_degrees -= 180
+                        if alpha_degrees < 0:
+                            alpha_degrees += 360
+                    the_car.calculate_duty_cycle(alpha_degrees)
+                elif data_in_json.get('keycodes'):
+                    if data_in_json.get('keycodes') == keycode_forward:
+                        the_car.set_driving_direction('forward')
+                        iteration_control = 5
+                    elif data_in_json.get('keycodes') == keycode_backward:
+                        the_car.set_driving_direction('backward')
+                        iteration_control = 5
+                    elif data_in_json.get('keycodes') == keycode_left:
+                        the_car.set_driving_direction('left')
+                        iteration_control = 2
+                    elif data_in_json.get('keycodes') == keycode_right:
+                        the_car.set_driving_direction('right')
+                        iteration_control = 2
+                    elif data_in_json.get('keycodes') == keycode_calibrate_forward:
+                        the_car.set_camera_forward(alpha_degrees)
+                if iteration_control <= 0:
+                    the_car.set_driving_direction('stop')
 
-            driving_direction_list[the_car.get_driving_direction()]()
-            pwm.ChangeDutyCycle(the_car.get_camera_direction())
-            check_things += 1
-        except ValueError:
-            if data_in_string == 'quit':
-                stop = True
+                driving_direction_list[the_car.get_driving_direction()]()
+                pwm.ChangeDutyCycle(the_car.get_camera_direction())
+                iteration_control -= 1
+            except ValueError:
+                if data_in_string == 'quit':
+                    stop = True
 # ------------------------End Main---------------------------------------
 
 if __name__ == "__main__":
