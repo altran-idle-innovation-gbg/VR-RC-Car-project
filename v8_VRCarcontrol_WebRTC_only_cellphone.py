@@ -10,20 +10,16 @@ import json
 # ------------------ Communication with phone ----------------
 """Setup of the communication servo through the webrtc server"""
 socket_path = '/tmp/uv4l.socket'
-
 try:
     os.unlink(socket_path)
 except OSError:
     if os.path.exists(socket_path):
         raise
-
 s = socket.socket(socket.AF_UNIX, socket.SOCK_SEQPACKET)
 s.bind(socket_path)
 s.listen(1)
 # ----------------- end communication with phone -----------------
-
 # ------------------ GPIO INITIATION ------------------------
-
 GPIO.setmode(GPIO.BOARD)  # Below 4 rows sets the output pins for motor control
 GPIO.setup(7, GPIO.OUT)  # EN1 controls left hand side wheels (H-bridge connector J1 pin1)
 GPIO.setup(11, GPIO.OUT)  # EN2 controls right hand side wheels (H-bridge connector J1 pin7)
@@ -34,9 +30,7 @@ GPIO.setup(12, GPIO.OUT)  # Sets the pin 12 as an output/signaling pin for the S
 GPIO.setwarnings(False)
 GPIO.output(7, False)
 GPIO.output(11, False)
-
 # ---------------- END GPIO INITIATION -----------------------
-
 # -------------------- Variables -----------------------------
 t = 0.05  # run time
 servoPin = 12  # Servo signaling pin
@@ -52,9 +46,9 @@ keycode_right = [106]  # set key code for turning right
 keycode_calibrate_forward = [28]  # set key code for calibrating forward servo direction
 quit_command = 'quit'
 # ------------------- END Variables --------------------------
-
 # ------------------- Start Car Class ------------------------
 """The Car class is used to keep track of the car settings."""
+
 
 class Car(object):
     def __init__(self):
@@ -101,7 +95,6 @@ class Car(object):
         self.set_camera_direction(7.5-alpha_forward_diff*2.5/90.0)
 
 # ------------------- End Car Class------------------------------
-
 # ----------------- Servo on startup ----------------------------
 """The Servo is started, and later only the duty cycle is changed to
 direct the cameras in different directions"""
@@ -112,7 +105,6 @@ def initialize_servo():
     pwm.start(7.5)  # Makes the servo point straight forward
     time.sleep(0.5)  # The time for the servo to straighten forward
 # ---------------- END Servo on startup -------------------------
-
 # -------Define class with GPIO instructions for driving---------
 """Functions to drive the Car. Because how the h-bridge is designed, the motors need to be
 disabled before changing the driving directions of the motors."""
@@ -162,15 +154,11 @@ def stop_all():
 
 
 # -------END-Define class with GPIO instructions for driving---------
-
 # --------------------- Driving direction list ----------------------
 """The driving list is later used as a look up table to call the driving functions."""
 driving_direction_list = {'forward': drive_forward, 'backward': drive_backward,
                           'left': drive_left_pivot, 'right': drive_right_pivot, 'stop': stop_all}
-
-
 # --------------------- End Driving Direction List ------------------
-
 # -----------------------Define quit game class ------------------
 
 
@@ -183,7 +171,6 @@ def stop_program():
 
 
 # ---------------------END Define quit game class ----------------
-
 # ---------------- Main ------------------------
 
 
@@ -196,7 +183,10 @@ def main():
     the_car = Car()
     alpha_degrees = 180
     iteration_control = 0
+    turn_off_program = False
     while True:
+        if turn_off_program:
+            break
         print 'awaiting connection...'
         connection, client_address = s.accept()
         print client_address
@@ -244,6 +234,9 @@ def main():
                 iteration_control -= 1
             except ValueError:
                 if data_in_string == 'quit':
+                    stop = True
+                    turn_off_program = True
+                elif data_in_string == 'stop':
                     stop = True
 # ------------------------End Main---------------------------------------
 
