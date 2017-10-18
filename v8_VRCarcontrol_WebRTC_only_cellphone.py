@@ -37,14 +37,15 @@ servoPin = 12  # Servo signaling pin
 servoStepLength = 0.5  # Set Step length for Servo
 forward = False  # Constant to set the direction the wheels spin
 backward = True  # Constant to set the direction the wheels spin
-MAX_DC = 9.5  # set boundary for maximum duty cycle for the Servo
-MIN_DC = 5.5  # set boundary for minimum duty cycle for the Servo
+MAX_DC = 11.0  # set boundary for maximum duty cycle for the Servo
+MIN_DC = 3.5  # set boundary for minimum duty cycle for the Servo
 keycode_forward = [103]  # set key code for driving forward
 keycode_backward = [108]  # set key code for driving backward
 keycode_left = [105]  # set key code for turning left
 keycode_right = [106]  # set key code for turning right
 keycode_calibrate_forward = [28]  # set key code for calibrating forward servo direction
 quit_command = 'quit'
+stop_command = 'stop'
 # ------------------- END Variables --------------------------
 # ------------------- Start Car Class ------------------------
 """The Car class is used to keep track of the car settings."""
@@ -228,15 +229,16 @@ def main():
                         the_car.set_camera_forward(alpha_degrees)
                 if iteration_control <= 0:
                     the_car.set_driving_direction('stop')
+                    iteration_control = 0
 
                 driving_direction_list[the_car.get_driving_direction()]()
                 pwm.ChangeDutyCycle(the_car.get_camera_direction())
                 iteration_control -= 1
             except ValueError:
-                if data_in_string == 'quit':
+                if data_in_string == quit_command:
                     stop = True
                     turn_off_program = True
-                elif data_in_string == 'stop':
+                elif data_in_string == stop_command:
                     stop = True
 # ------------------------End Main---------------------------------------
 
