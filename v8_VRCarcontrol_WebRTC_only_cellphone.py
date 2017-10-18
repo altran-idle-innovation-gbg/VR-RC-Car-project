@@ -99,10 +99,9 @@ class Car(object):
 # ----------------- Servo on startup ----------------------------
 """The Servo is started, and later only the duty cycle is changed to
 direct the cameras in different directions"""
-
+pwm = GPIO.PWM(servoPin, 50)
 
 def initialize_servo():
-    pwm = GPIO.PWM(servoPin, 50)
     pwm.start(7.5)  # Makes the servo point straight forward
     time.sleep(0.5)  # The time for the servo to straighten forward
 # ---------------- END Servo on startup -------------------------
