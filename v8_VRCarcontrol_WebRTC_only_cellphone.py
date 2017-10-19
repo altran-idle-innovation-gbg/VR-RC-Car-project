@@ -17,7 +17,7 @@ except OSError:
         raise
 s = socket.socket(socket.AF_UNIX, socket.SOCK_SEQPACKET)
 s.bind(socket_path)
-s.listen(1)
+s.listen(0)
 # ----------------- end communication with phone -----------------
 # ------------------ GPIO INITIATION ------------------------
 GPIO.setmode(GPIO.BOARD)  # Below 4 rows sets the output pins for motor control
@@ -184,6 +184,7 @@ def main():
     alpha_degrees = 180
     iteration_control = 0
     turn_off_program = False
+    averaging_duty_cycle = [180, 180, 180]
     while True:
         if turn_off_program:
             break
@@ -210,6 +211,8 @@ def main():
                         alpha_degrees -= 180
                         if alpha_degrees < 0:
                             alpha_degrees += 360
+                    averaging_duty_cycle.pop(0)
+                    alpha_degrees = sum(averaging_duty_cycle)/len(averaging_duty_cycle)
                     the_car.calculate_duty_cycle(alpha_degrees)
                 elif data_in_json.get('keycodes'):
                     if data_in_json.get('keycodes') == keycode_forward:
