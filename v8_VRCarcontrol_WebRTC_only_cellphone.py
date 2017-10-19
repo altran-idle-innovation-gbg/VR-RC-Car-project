@@ -212,6 +212,9 @@ def main():
                         if alpha_degrees < 0:
                             alpha_degrees += 360
                     averaging_duty_cycle.pop(0)
+                    averaging_duty_cycle.append(alpha_degrees)
+                    print averaging_duty_cycle
+                    print len(averaging_duty_cycle)
                     alpha_degrees = sum(averaging_duty_cycle)/len(averaging_duty_cycle)
                     the_car.calculate_duty_cycle(alpha_degrees)
                 elif data_in_json.get('keycodes'):
@@ -248,6 +251,6 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except:
-        pass
+    except Exception as e:
+        print e
     stop_program()

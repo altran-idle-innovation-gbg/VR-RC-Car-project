@@ -2,6 +2,8 @@
 import socket
 import traceback
 import os
+import pygame
+from pygame.locals import *
 
 socket_path = '/tmp/uv4l.socket'
 try:
@@ -27,17 +29,23 @@ pygame.display.set_caption('VR CAR')
 print 'awaiting connection...'
 connection, client_address = s.accept()
 print client_address
-stop = True
-while stop:
+stop = False
+while True:
+    if stop:
+        break
     data_in_string = connection.recv(256)
     print data_in_string
-    if event.type == pygame.KEYDOWN:
-        if event.key == 32:
-            stop = False
-        elif event.key == K_ESCAPE:
-            stop = False
-        elif event.type == pygame.QUIT:
-            stop = False
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+           if event.key == 32:
+               stop = True
+               print 'space'
+           elif event.key == K_ESCAPE:
+               stop = True
+               print 'esc'
+           elif event.type == pygame.QUIT:
+               stop = True
+               print 'quit'
 connection.close()
 try:
     joyStick.quit()
