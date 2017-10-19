@@ -236,6 +236,7 @@ def main():
                 driving_direction_list[the_car.get_driving_direction()]()
                 pwm.ChangeDutyCycle(the_car.get_camera_direction())
                 iteration_control -= 1
+                print the_car.get_camera_direction()
             except ValueError:
                 if data_in_string == quit_command:
                     stop = True
