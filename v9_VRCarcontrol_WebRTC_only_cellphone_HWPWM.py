@@ -27,12 +27,12 @@ ENABLE_R_PIN = 17
 DIR_L_PIN = 27
 DIR_R_PIN = 22
 SERVO_PIN = 18
-pi.set_mode(ENABLE_L_PIN, GPIO.OUT)  # EN1 controls left hand side wheels (H-bridge connector J1 pin1)
-pi.set_mode(ENABLE_R_PIN, GPIO.OUT)  # EN2 controls right hand side wheels (H-bridge connector J1 pin7)
-pi.set_mode(DIR_L_PIN, GPIO.OUT)  # DIR1 LH True=Backward & False=Forward
-pi.set_mode(DIR_R_PIN, GPIO.OUT)  # DIR2 RH True=Backward & False=Forward
+pi.set_mode(ENABLE_L_PIN, pigpio.OUTPUT)  # EN1 controls left hand side wheels (H-bridge connector J1 pin1)
+pi.set_mode(ENABLE_R_PIN, pigpio.OUTPUT)  # EN2 controls right hand side wheels (H-bridge connector J1 pin7)
+pi.set_mode(DIR_L_PIN, pigpio.OUTPUT)  # DIR1 LH True=Backward & False=Forward
+pi.set_mode(DIR_R_PIN, pigpio.OUTPUT)  # DIR2 RH True=Backward & False=Forward
 
-pi.set_mode(SERVO_PIN, GPIO.OUT)  # Sets the pin 12 as an output/signaling pin for the Servo
+pi.set_mode(SERVO_PIN, pigpio.OUTPUT)  # Sets the pin 12 as an output/signaling pin for the Servo
 pi.write(ENABLE_L_PIN, False)
 pi.write(ENABLE_R_PIN, False)
 # ---------------- END GPIO INITIATION -----------------------
@@ -106,7 +106,7 @@ direct the cameras in different directions"""
 
 
 def initialize_servo():
-    pi.set_servo_pulsewidth(18, 1500)  # Makes the servo point straight forward
+    pi.set_servo_pulsewidth(SERVO_PIN, 1500)  # Makes the servo point straight forward
     time.sleep(0.5)  # The time for the servo to straighten forward
 # ---------------- END Servo on startup -------------------------
 # -------Define class with GPIO instructions for driving---------
