@@ -215,7 +215,7 @@ def main():
                     averaging_duty_cycle.append(alpha_degrees)
                     print averaging_duty_cycle
                     print len(averaging_duty_cycle)
-                    alpha_degrees = sum(averaging_duty_cycle)/len(averaging_duty_cycle)
+                    alpha_degrees = round(sum(averaging_duty_cycle)/len(averaging_duty_cycle),1)
                     the_car.calculate_duty_cycle(alpha_degrees)
                 elif data_in_json.get('keycodes'):
                     if data_in_json.get('keycodes') == keycode_forward:
@@ -237,9 +237,9 @@ def main():
                     iteration_control = 0
 
                 driving_direction_list[the_car.get_driving_direction()]()
-                pwm.ChangeDutyCycle(the_car.get_camera_direction())
+                pwm.ChangeDutyCycle(round(the_car.get_camera_direction(),1))
                 iteration_control -= 1
-                print the_car.get_camera_direction()
+                print round(the_car.get_camera_direction(),1)
             except ValueError:
                 if data_in_string == quit_command:
                     stop = True
