@@ -41,8 +41,8 @@ t = 0.05  # run time
 servoStepLength = 0.5  # Set Step length for Servo
 forward = False  # Constant to set the direction the wheels spin
 backward = True  # Constant to set the direction the wheels spin
-MAX_DC = 2200  # set boundary for maximum duty cycle for the Servo
-MIN_DC = 700  # set boundary for minimum duty cycle for the Servo
+MAX_DC = 2250  # set boundary for maximum duty cycle for the Servo
+MIN_DC = 750  # set boundary for minimum duty cycle for the Servo
 keycode_forward = [103]  # set key code for driving forward
 keycode_backward = [108]  # set key code for driving backward
 keycode_left = [105]  # set key code for turning left
@@ -97,7 +97,7 @@ class Car(object):
         else:
             alpha_forward_diff = alpha_forward_diff2
 
-        self.set_camera_direction(1500-alpha_forward_diff*500/90.0)
+        self.set_camera_direction(1500-alpha_forward_diff*750/90.0)
 
 # ------------------- End Car Class------------------------------
 # ----------------- Servo on startup ----------------------------
