@@ -217,8 +217,6 @@ def main():
                             alpha_degrees += 360
                     averaging_duty_cycle.pop(0)
                     averaging_duty_cycle.append(alpha_degrees)
-                    print averaging_duty_cycle
-                    print len(averaging_duty_cycle)
                     alpha_degrees = round(sum(averaging_duty_cycle)/len(averaging_duty_cycle), 1)
                     the_car.calculate_duty_cycle(alpha_degrees)
                 elif data_in_json.get('keycodes'):
@@ -243,7 +241,6 @@ def main():
                 driving_direction_list[the_car.get_driving_direction()]()
                 pi.set_servo_pulsewidth(SERVO_PIN,round(the_car.get_camera_direction(), -1))
                 iteration_control -= 1
-                print round(the_car.get_camera_direction(), -1)
             except ValueError:
                 if data_in_string == quit_command:
                     stop = True
