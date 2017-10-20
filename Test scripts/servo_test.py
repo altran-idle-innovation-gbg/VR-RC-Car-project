@@ -23,7 +23,7 @@ servo.set_servo(12,1500)
 time.sleep(10)
 servo.stop_servo(12)
 '''
-servopin=18
+servopin = 18
 
 pi = pigpio.pi()
 pi.set_mode(servopin, pigpio.OUTPUT)
