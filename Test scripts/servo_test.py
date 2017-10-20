@@ -1,7 +1,5 @@
-import RPi.GPIO as gpio
-import RPIO
-#from RPIO import PWM
-import wiringpi
+import pigpio
+import time
 '''
 gpio.setmode(gpio.BOARD) #Below 4 rows just tells the RPi what theese pins are output pinns =(pins to send signals to the H-brige with)
 servoPin=12 # Servo signaling pin
@@ -18,8 +16,18 @@ print(DC)
 pwm.stop()
 gpio.cleanup()
 '''
-
+'''
 RPIO.setmode(RPIO.BOARD)
 servo = RPIO.PWM.servo()
 servo.set_servo(12,1500)
+time.sleep(10)
 servo.stop_servo(12)
+'''
+servopin=18
+
+pi = pigpio.pi()
+pi.set_mode(servopin, pigpio.OUTPUT)
+pi.set_servo_pulsewidth(servopin,1200)
+time.sleep(10)
+pi.set_servo_pulsewidth(servopin,0)
+pi.stop()
