@@ -1,4 +1,6 @@
 import RPi.GPIO as gpio
+import RPIO
+#from RPIO import PWM
 import wiringpi
 '''
 gpio.setmode(gpio.BOARD) #Below 4 rows just tells the RPi what theese pins are output pinns =(pins to send signals to the H-brige with)
@@ -17,9 +19,7 @@ pwm.stop()
 gpio.cleanup()
 '''
 
-wiringpi.wiringPiSetupPhys()
-wiringpi.pinMode(12,2)
-wiringpi.pwmWrite(12,75)
-time.sleep(10)
-wiringpi.pwmWrite(12,0)
-wiringpi.pinMode(12,0)
+RPIO.setmode(RPIO.BOARD)
+servo = RPIO.PWM.servo()
+servo.set_servo(12,1500)
+servo.stop_servo(12)
