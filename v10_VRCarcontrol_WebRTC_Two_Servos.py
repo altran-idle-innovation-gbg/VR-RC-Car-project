@@ -26,13 +26,17 @@ ENABLE_L_PIN = 4
 ENABLE_R_PIN = 17
 DIR_L_PIN = 27
 DIR_R_PIN = 22
-SERVO_PIN = 18
+SERVO_PIN_Z_AXIS = 18
+SERVO_PIN_X_AXIS = 19
+
 pi.set_mode(ENABLE_L_PIN, pigpio.OUTPUT)  # EN1 controls left hand side wheels (H-bridge connector J1 pin1)
 pi.set_mode(ENABLE_R_PIN, pigpio.OUTPUT)  # EN2 controls right hand side wheels (H-bridge connector J1 pin7)
 pi.set_mode(DIR_L_PIN, pigpio.OUTPUT)  # DIR1 LH True=Backward & False=Forward
 pi.set_mode(DIR_R_PIN, pigpio.OUTPUT)  # DIR2 RH True=Backward & False=Forward
 
-pi.set_mode(SERVO_PIN, pigpio.OUTPUT)  # Sets the pin 12 as an output/signaling pin for the Servo
+pi.set_mode(SERVO_PIN_Z_AXIS, pigpio.OUTPUT)  # Sets the physical pin 12 as an output/signaling pin for the Servo
+pi.set_mode(SERVO_PIN_X_AXIS, pigpio.OUTPUT)  # Sets the physical pin 35 as an output/signaling pin for the Servo
+
 pi.write(ENABLE_L_PIN, False)
 pi.write(ENABLE_R_PIN, False)
 # ---------------- END GPIO INITIATION -----------------------
@@ -41,8 +45,10 @@ t = 0.05  # run time
 servoStepLength = 0.5  # Set Step length for Servo
 forward = False  # Constant to set the direction the wheels spin
 backward = True  # Constant to set the direction the wheels spin
-MAX_DC = 2250  # set boundary for maximum duty cycle for the Servo
-MIN_DC = 750  # set boundary for minimum duty cycle for the Servo
+MAX_DC_X = 2000  # set boundary for maximum duty cycle for the Servo
+MIN_DC_X = 1000  # set boundary for minimum duty cycle for the Servo
+MAX_DC_Z = 2250  # set boundary for maximum duty cycle for the Servo
+MIN_DC_Z = 750  # set boundary for minimum duty cycle for the Servo
 keycode_forward = [103]  # set key code for driving forward
 keycode_backward = [108]  # set key code for driving backward
 keycode_left = [105]  # set key code for turning left
@@ -58,7 +64,8 @@ stop_command = 'stop'
 class Car(object):
     def __init__(self):
         self.drivingDirection = "stop"
-        self.cameraDirection = 1500
+        self.cameraDirection_Z = 1500
+        self.cameraDirection_X = 1500
         self.cameraForward = 180.0
 
     def get_driving_direction(self):
@@ -67,16 +74,27 @@ class Car(object):
     def set_driving_direction(self, driving_direction):
         self.drivingDirection = driving_direction
 
-    def get_camera_direction(self):
-        return self.cameraDirection
+    def get_camera_direction_z(self):
+        return self.cameraDirection_Z
 
-    def set_camera_direction(self, camera_direction):
-        if camera_direction < MIN_DC:
-            self.cameraDirection = MIN_DC
-        elif camera_direction > MAX_DC:
-            self.cameraDirection = MAX_DC
+    def get_camera_direction_x(self):
+        return self.cameraDirection_X
+
+    def set_camera_direction_z(self, camera_direction):
+        if camera_direction < MIN_DC_Z:
+            self.cameraDirection_Z = MIN_DC_Z
+        elif camera_direction > MAX_DC_Z:
+            self.cameraDirection_Z = MAX_DC_Z
         else:
-            self.cameraDirection = camera_direction
+            self.cameraDirection_Z = camera_direction
+
+    def set_camera_direction_x(self, camera_direction):
+        if camera_direction < MIN_DC_X:
+            self.cameraDirection_X = MIN_DC_X
+        elif camera_direction > MAX_DC_X:
+            self.cameraDirection_X = MAX_DC_X
+        else:
+            self.cameraDirection_X = camera_direction
 
     def set_camera_forward(self, camera_forward):
         self.cameraForward = camera_forward
@@ -84,7 +102,7 @@ class Car(object):
     def get_camera_forward(self):
         return self.cameraForward
 
-    def calculate_duty_cycle(self, alpha):
+    def calculate_duty_cycle(self, alpha,gamma):
         alpha_forward_diff1 = alpha - self.cameraForward
 
         if alpha_forward_diff1 < 0:
@@ -97,7 +115,8 @@ class Car(object):
         else:
             alpha_forward_diff = alpha_forward_diff2
 
-        self.set_camera_direction(1500-alpha_forward_diff*750/90.0)
+        self.set_camera_direction_z(1500-alpha_forward_diff*750/90.0)
+        self.set_camera_direction_x(1000.0+gamma*1000.0/180.0)
 
 # ------------------- End Car Class------------------------------
 # ----------------- Servo on startup ----------------------------
@@ -106,7 +125,8 @@ direct the cameras in different directions"""
 
 
 def initialize_servo():
-    pi.set_servo_pulsewidth(SERVO_PIN, 1500)  # Makes the servo point straight forward
+    pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, 1500)  # Makes the servo point straight forward
+    pi.set_servo_pulsewidth(SERVO_PIN_X_AXIS, 1500)  # Makes the servo point straight forward
     time.sleep(0.5)  # The time for the servo to straighten forward
 # ---------------- END Servo on startup -------------------------
 # -------Define class with GPIO instructions for driving---------
@@ -169,7 +189,7 @@ driving_direction_list = {'forward': drive_forward, 'backward': drive_backward,
 def stop_program():
     """shuts down all running components of program"""
     stop_all()
-    pi.set_servo_pulsewidth(SERVO_PIN, 0)
+    pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, 0)
     pi.stop()
     print ("Shutting down!")
 
@@ -188,7 +208,6 @@ def main():
     alpha_degrees = 180.0
     iteration_control = 0
     turn_off_program = False
-    averaging_duty_cycle = [180.0, 180.0, 180.0]
     while True:
         if turn_off_program:
             break
@@ -199,7 +218,7 @@ def main():
         stop = False
         while True:
             if stop:
-                pi.set_servo_pulsewidth(SERVO_PIN, 0)
+                pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, 0)
                 stop_all()
                 connection.send('Connection aborted, will reconnect in 15s if call not hanged up.')
                 connection.close()
@@ -213,12 +232,10 @@ def main():
                     gamma_degrees = float(data_in_json.get('do').get('gamma'))
                     if gamma_degrees < 0:
                         alpha_degrees -= 180
+                        gamma_degrees += 180
                         if alpha_degrees < 0:
                             alpha_degrees += 360
-                    averaging_duty_cycle.pop(0)
-                    averaging_duty_cycle.append(alpha_degrees)
-                    alpha_degrees = round(sum(averaging_duty_cycle)/len(averaging_duty_cycle), 1)
-                    the_car.calculate_duty_cycle(alpha_degrees)
+                    the_car.calculate_duty_cycle(alpha_degrees,gamma_degrees)
                 elif data_in_json.get('keycodes'):
                     if data_in_json.get('keycodes') == keycode_forward:
                         the_car.set_driving_direction('forward')
@@ -239,7 +256,8 @@ def main():
                     iteration_control = 0
 
                 driving_direction_list[the_car.get_driving_direction()]()
-                pi.set_servo_pulsewidth(SERVO_PIN,round(the_car.get_camera_direction(), -1))
+                pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS,round(the_car.get_camera_direction_z(), -1))
+                pi.set_servo_pulsewidth(SERVO_PIN_X_AXIS,round(the_car.get_camera_direction_x(), -1))
                 iteration_control -= 1
             except ValueError:
                 if data_in_string == quit_command:
