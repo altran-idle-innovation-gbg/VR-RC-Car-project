@@ -27,7 +27,15 @@ servopin = 18
 
 pi = pigpio.pi()
 pi.set_mode(servopin, pigpio.OUTPUT)
-pi.set_servo_pulsewidth(servopin,1200)
-time.sleep(10)
+pi.set_servo_pulsewidth(servopin,1500)
+while True:
+   desiredPosition=input("where goes the servo? 0-180 ")
+   if desiredPosition<0:
+      break
+   elif desiredPosition>180:
+      desiredPosition=180
+   else:
+      pulseWidth = 1000 + desiredPosition*1000/180
+      pi.set_servo_pulsewidth(servopin,pulseWidth)
 pi.set_servo_pulsewidth(servopin,0)
 pi.stop()
