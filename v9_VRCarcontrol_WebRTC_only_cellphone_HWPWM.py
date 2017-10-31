@@ -208,6 +208,7 @@ def main():
             data_in_string = connection.recv(256)
             try:
                 data_in_json = json.loads(data_in_string)
+                print data_in_json
                 if data_in_json.get('do'):
                     alpha_degrees = float(data_in_json.get('do').get('alpha'))
                     gamma_degrees = float(data_in_json.get('do').get('gamma'))

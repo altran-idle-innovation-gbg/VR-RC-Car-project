@@ -35,7 +35,7 @@ pi.set_mode(DIR_L_PIN, pigpio.OUTPUT)  # DIR1 LH True=Backward & False=Forward
 pi.set_mode(DIR_R_PIN, pigpio.OUTPUT)  # DIR2 RH True=Backward & False=Forward
 
 pi.set_mode(SERVO_PIN_Z_AXIS, pigpio.OUTPUT)  # Sets the physical pin 12 as an output/signaling pin for the Servo
-pi.set_mode(SERVO_PIN_X_AXIS, pigpio.OUTPUT)  # Sets the physical pin 35 as an output/signaling pin for the Servo
+#pi.set_mode(SERVO_PIN_X_AXIS, pigpio.OUTPUT)  # Sets the physical pin 35 as an output/signaling pin for the Servo
 
 pi.write(ENABLE_L_PIN, False)
 pi.write(ENABLE_R_PIN, False)
@@ -126,7 +126,7 @@ direct the cameras in different directions"""
 
 def initialize_servo():
     pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, 1500)  # Makes the servo point straight forward
-    pi.set_servo_pulsewidth(SERVO_PIN_X_AXIS, 1500)  # Makes the servo point straight forward
+    #pi.set_servo_pulsewidth(SERVO_PIN_X_AXIS, 1500)  # Makes the servo point straight forward
     time.sleep(0.5)  # The time for the servo to straighten forward
 # ---------------- END Servo on startup -------------------------
 # -------Define class with GPIO instructions for driving---------
@@ -257,7 +257,8 @@ def main():
 
                 driving_direction_list[the_car.get_driving_direction()]()
                 pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS,round(the_car.get_camera_direction_z(), -1))
-                pi.set_servo_pulsewidth(SERVO_PIN_X_AXIS,round(the_car.get_camera_direction_x(), -1))
+                #pi.set_servo_pulsewidth(SERVO_PIN_X_AXIS,round(the_car.get_camera_direction_x(), -1))
+                print('alpha: ',round(the_car.get_camera_direction_z()),' gamma: ', round(the_car.get_camera_direction_x()))
                 iteration_control -= 1
             except ValueError:
                 if data_in_string == quit_command:
@@ -268,8 +269,8 @@ def main():
 # ------------------------End Main---------------------------------------
 
 if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:
-        print e
-    stop_program()
+   try:
+      main()
+   except Exception as e:
+      print e
+   stop_program()
