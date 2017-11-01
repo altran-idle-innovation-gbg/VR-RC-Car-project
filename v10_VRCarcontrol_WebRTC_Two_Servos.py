@@ -48,7 +48,7 @@ forward = False  # Constant to set the direction the wheels spin
 backward = True  # Constant to set the direction the wheels spin
 MAX_PW_ELEVATION = 1800  # set the maximum pulse width of the pulse width modulation
                          # for the Servo controlling elevation angle
-MIN_PW_ELEVATION = 1200  # set the minimum pulse width of the pulse width modulation
+MIN_PW_ELEVATION = 800  # set the minimum pulse width of the pulse width modulation
                          # for the Servo controlling elevation angle
 MAX_PW_Z = 2250  # set the maximum pulse width of the pulse width modulation
                  # for the Servo controlling rotation around Z-axis
