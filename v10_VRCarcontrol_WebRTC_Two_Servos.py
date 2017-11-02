@@ -263,6 +263,7 @@ def main():
                     alpha_degrees = float(data_in_json.get('do').get('alpha'))
                     gamma_degrees = float(data_in_json.get('do').get('gamma'))
                     check_upside_down = float(data_in_json.get('dm').get('gy'))
+                    print('check_upside_down: ', check_upside_down)
                     if gamma_degrees < 0:
                         alpha_degrees -= 180
                         gamma_degrees += 180
@@ -274,6 +275,8 @@ def main():
                         upside_down = False
                     if upside_down:
                         gamma_degrees = -gamma_degrees
+                    print('gamma_degrees: ', gamma_degrees)
+                    print('upside_down?: ', upside_down)
                     the_car.calculate_new_pulse_widths(alpha_degrees, gamma_degrees)
                 elif data_in_json.get('keycodes'):
                     if data_in_json.get('keycodes') == keycode_forward:
@@ -297,8 +300,8 @@ def main():
                 driving_direction_list[the_car.get_driving_direction()]()
                 pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, round(the_car.get_camera_direction_z(), -1))
                 pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, round(the_car.get_camera_direction_elevation(), 0))
-                print round(the_car.get_camera_direction_z(), -1)
-                print round(the_car.get_camera_direction_elevation(), 0)
+                print('alpha: ', round(the_car.get_camera_direction_z(), -1))
+                print('gamma: ', round(the_car.get_camera_direction_elevation(), 0))
                 iteration_control -= 1
             except ValueError:
                 if data_in_string == quit_command:
