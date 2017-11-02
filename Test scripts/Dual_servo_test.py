@@ -16,8 +16,8 @@ while True:
 
     if desiredPosition1 < 0 or desiredPosition2 < 0:
         break
-    elif desiredPosition1 > 180 or desiredPosition2 > 180:
-        desiredPosition1 = 180
+    elif desiredPosition1 > 240 or desiredPosition2 > 180:
+        desiredPosition1 = 240
         desiredPosition2 = 180
     else:
         pulseWidth1 = 1000 + desiredPosition1 * 1000 / 180

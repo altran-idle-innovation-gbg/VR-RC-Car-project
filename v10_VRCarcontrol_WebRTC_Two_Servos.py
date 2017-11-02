@@ -27,8 +27,8 @@ ENABLE_L_PIN = 4  # GPIO pin number for enabling left side wheels
 ENABLE_R_PIN = 17  # GPIO pin number for enabling right side wheels
 DIR_L_PIN = 27  # GPIO pin number for direction of left side wheels
 DIR_R_PIN = 22  # GPIO pin number for direction of right side wheels
-SERVO_PIN_Z_AXIS = 18  # GPIO pin number for Servo pin rotating around the z-axis
-SERVO_PIN_ELEVATION = 19  # GPIO pin number for Servo pin changing the elevation angle
+SERVO_PIN_Z_AXIS = 19  # GPIO pin number for Servo pin rotating around the z-axis
+SERVO_PIN_ELEVATION = 18  # GPIO pin number for Servo pin changing the elevation angle
 
 pi.set_mode(ENABLE_L_PIN, pigpio.OUTPUT)  # EN1 controls left hand side wheels (H-bridge connector J1 pin1)
 pi.set_mode(ENABLE_R_PIN, pigpio.OUTPUT)  # EN2 controls right hand side wheels (H-bridge connector J1 pin7)
@@ -46,11 +46,11 @@ t = 0.05  # run time
 servoStepLength = 0.5  # Set Step length for Servo
 forward = False  # Constant to set the direction the wheels spin
 backward = True  # Constant to set the direction the wheels spin
-MAX_PW_ELEVATION = 2300  # set the maximum pulse width of the pulse width modulation
+MAX_PW_ELEVATION = 2200  # set the maximum pulse width of the pulse width modulation
                          # for the Servo controlling elevation angle. Larger pulse width points the cameras downward
-MIN_PW_ELEVATION = 1000  # set the minimum pulse width of the pulse width modulation
+MIN_PW_ELEVATION = 900  # set the minimum pulse width of the pulse width modulation
                         # for the Servo controlling elevation angle. Lower pulse width points the cameras upwards
-START_PW_ELEVATION = 1000  # initialization value for the z-axis servo
+START_PW_ELEVATION = 900  # initialization value for the z-axis servo
 MAX_PW_Z = 2250  # set the maximum pulse width of the pulse width modulation
                  # for the Servo controlling rotation around Z-axis
 MIN_PW_Z = 750  # set the minimum pulse width of the pulse width modulation
@@ -142,7 +142,7 @@ class Car(object):
             alpha_forward_diff = alpha_forward_diff2
 
         self.set_camera_direction_z(1500-alpha_forward_diff*750/90.0)
-        self.set_camera_direction_elevation(2000.0+gamma_diff*1000.0/90.0)
+        self.set_camera_direction_elevation(1900.0-gamma_diff*1000.0/90.0)
 
 # ------------------- End Car Class------------------------------
 # ----------------- Servo on startup ----------------------------
@@ -289,6 +289,8 @@ def main():
                 driving_direction_list[the_car.get_driving_direction()]()
                 pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, round(the_car.get_camera_direction_z(), -1))
                 pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, round(the_car.get_camera_direction_elevation(), -1))
+                print round(the_car.get_camera_direction_z(), -1)
+                print round(the_car.get_camera_direction_elevation(), -1)
                 iteration_control -= 1
             except ValueError:
                 if data_in_string == quit_command:
