@@ -46,10 +46,10 @@ t = 0.05  # run time
 servoStepLength = 0.5  # Set Step length for Servo
 forward = False  # Constant to set the direction the wheels spin
 backward = True  # Constant to set the direction the wheels spin
-MAX_PW_ELEVATION = 1800  # set the maximum pulse width of the pulse width modulation
-                         # for the Servo controlling elevation angle
-MIN_PW_ELEVATION = 800  # set the minimum pulse width of the pulse width modulation
-                         # for the Servo controlling elevation angle
+MAX_PW_ELEVATION = 2300  # set the maximum pulse width of the pulse width modulation
+                         # for the Servo controlling elevation angle. Larger pulse width points the cameras downward
+MIN_PW_ELEVATION = 1000  # set the minimum pulse width of the pulse width modulation
+                        # for the Servo controlling elevation angle. Lower pulse width points the cameras upwards
 MAX_PW_Z = 2250  # set the maximum pulse width of the pulse width modulation
                  # for the Servo controlling rotation around Z-axis
 MIN_PW_Z = 750  # set the minimum pulse width of the pulse width modulation
@@ -72,7 +72,7 @@ class Car(object):
         """The car is initialized as standing still with camera direction forward"""
         self.drivingDirection = "stop"
         self.cameraDirection_Z = 1500
-        self.cameraDirection_Elevation = 1500
+        self.cameraDirection_Elevation = 2000
         self.cameraForward = 180.0
 
     def get_driving_direction(self):
@@ -128,7 +128,7 @@ class Car(object):
            taken from the phone. 2. gamma: elevation angle (degrees) as taken from the phone.
            The alpha angle is compared to the forward angle."""
         alpha_forward_diff1 = alpha - self.cameraForward
-
+        gamma_diff = 90 - gamma
         if alpha_forward_diff1 < 0:
             alpha_forward_diff2 = 360.0 + alpha - self.cameraForward
         else:
@@ -140,7 +140,7 @@ class Car(object):
             alpha_forward_diff = alpha_forward_diff2
 
         self.set_camera_direction_z(1500-alpha_forward_diff*750/90.0)
-        self.set_camera_direction_elevation(1000.0+gamma*1000.0/180.0)
+        self.set_camera_direction_elevation(2000.0+gamma_diff*1000.0/90.0)
 
 # ------------------- End Car Class------------------------------
 # ----------------- Servo on startup ----------------------------
