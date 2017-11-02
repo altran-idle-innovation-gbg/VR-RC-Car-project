@@ -271,9 +271,9 @@ def main():
                         gamma_degrees += 180
                         if alpha_degrees < 0:
                             alpha_degrees += 360
-                    if check_upside_down1 > 7:
+                    if check_upside_down1 > 7 or check_upside_down2 > 7:
                         upside_down = True
-                    elif check_upside_down2 < -7:
+                    elif check_upside_down2 < -7 or check_upside_down1 < -7:
                         upside_down = False
                     if upside_down:
                         gamma_degrees = 180 - gamma_degrees
