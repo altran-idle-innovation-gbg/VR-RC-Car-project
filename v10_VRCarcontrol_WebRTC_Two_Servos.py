@@ -288,9 +288,9 @@ def main():
 
                 driving_direction_list[the_car.get_driving_direction()]()
                 pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, round(the_car.get_camera_direction_z(), -1))
-                pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, round(the_car.get_camera_direction_elevation(), -1))
+                pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, round(the_car.get_camera_direction_elevation(), 0))
                 print round(the_car.get_camera_direction_z(), -1)
-                print round(the_car.get_camera_direction_elevation(), -1)
+                print round(the_car.get_camera_direction_elevation(), 0)
                 iteration_control -= 1
             except ValueError:
                 if data_in_string == quit_command:
