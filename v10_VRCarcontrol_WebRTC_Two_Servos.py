@@ -262,16 +262,18 @@ def main():
                 if data_in_json.get('do'):
                     alpha_degrees = float(data_in_json.get('do').get('alpha'))
                     gamma_degrees = float(data_in_json.get('do').get('gamma'))
-                    check_upside_down = float(data_in_json.get('dm').get('gy'))
-                    print('check_upside_down: ', check_upside_down)
+                    check_upside_down1 = float(data_in_json.get('dm').get('gx'))
+                    check_upside_down2 = float(data_in_json.get('dm').get('gy'))
+                    print('check_upside_down1: ', check_upside_down1)
+                    print('check_upside_down2: ', check_upside_down2)
                     if gamma_degrees < 0:
                         alpha_degrees -= 180
                         gamma_degrees += 180
                         if alpha_degrees < 0:
                             alpha_degrees += 360
-                    if check_upside_down > 5:
+                    if check_upside_down1 > 7:
                         upside_down = True
-                    elif check_upside_down < -5:
+                    elif check_upside_down2 < -7:
                         upside_down = False
                     if upside_down:
                         gamma_degrees = -gamma_degrees
