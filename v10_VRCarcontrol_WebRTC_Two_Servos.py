@@ -235,6 +235,7 @@ def main():
     alpha_degrees = 180.0
     iteration_control = 0
     turn_off_program = False
+    upside_down = False
     while True:
         if turn_off_program:
             break
@@ -261,11 +262,18 @@ def main():
                 if data_in_json.get('do'):
                     alpha_degrees = float(data_in_json.get('do').get('alpha'))
                     gamma_degrees = float(data_in_json.get('do').get('gamma'))
+                    check_upside_down = float(data_in_json.get('dm').get('gy'))
                     if gamma_degrees < 0:
                         alpha_degrees -= 180
                         gamma_degrees += 180
                         if alpha_degrees < 0:
                             alpha_degrees += 360
+                    if check_upside_down > 5:
+                        upside_down = True
+                    elif check_upside_down < -5:
+                        upside_down = False
+                    if upside_down:
+                        gamma_degrees = -gamma_degrees
                     the_car.calculate_new_pulse_widths(alpha_degrees, gamma_degrees)
                 elif data_in_json.get('keycodes'):
                     if data_in_json.get('keycodes') == keycode_forward:
