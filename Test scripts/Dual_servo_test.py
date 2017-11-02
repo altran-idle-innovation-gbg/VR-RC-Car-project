@@ -22,8 +22,9 @@ while True:
     else:
         pulseWidth1 = 1000 + desiredPosition1 * 1000 / 180
         pulseWidth2 = 1000 + desiredPosition2 * 1000 / 180
-        pi.set_servo_pulsewidth(servopin1, pulseWidth1)
-        pi.set_servo_pulsewidth(servopin2, pulseWidth2)
+    pi.set_servo_pulsewidth(servopin1, pulseWidth1)
+    pi.set_servo_pulsewidth(servopin2, pulseWidth2)
+
 pi.set_servo_pulsewidth(servopin1, 0)
 pi.set_servo_pulsewidth(servopin2, 0)
 pi.stop()
