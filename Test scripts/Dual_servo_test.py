@@ -11,8 +11,8 @@ pi.set_servo_pulsewidth(servopin1, 1500)
 pi.set_servo_pulsewidth(servopin2, 1500)
 
 while True:
-    desiredPosition1 = input("where goes servo 1? 0-180 ")
-    desiredPosition2 = input("where goes servo 1? 0-180 ")
+    desiredPosition1 = input("where goes servo up/down? 0-180 ")
+    desiredPosition2 = input("where goes servo Left/Right? 0-180 ")
 
     if desiredPosition1 < 0 or desiredPosition2 < 0:
         break
