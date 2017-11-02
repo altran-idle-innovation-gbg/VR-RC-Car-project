@@ -276,7 +276,7 @@ def main():
                     elif check_upside_down2 < -7:
                         upside_down = False
                     if upside_down:
-                        gamma_degrees = -gamma_degrees
+                        gamma_degrees = 180 - gamma_degrees
                     print('gamma_degrees: ', gamma_degrees)
                     print('upside_down?: ', upside_down)
                     the_car.calculate_new_pulse_widths(alpha_degrees, gamma_degrees)
