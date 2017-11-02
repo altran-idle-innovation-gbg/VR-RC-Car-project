@@ -50,10 +50,12 @@ MAX_PW_ELEVATION = 2300  # set the maximum pulse width of the pulse width modula
                          # for the Servo controlling elevation angle. Larger pulse width points the cameras downward
 MIN_PW_ELEVATION = 1000  # set the minimum pulse width of the pulse width modulation
                         # for the Servo controlling elevation angle. Lower pulse width points the cameras upwards
+START_PW_ELEVATION = 1000  # initialization value for the z-axis servo
 MAX_PW_Z = 2250  # set the maximum pulse width of the pulse width modulation
                  # for the Servo controlling rotation around Z-axis
 MIN_PW_Z = 750  # set the minimum pulse width of the pulse width modulation
                 # for the Servo controlling rotation around Z-axis
+START_PW_Z = 1500  # initialization value for the z-axis servo
 keycode_forward = [103]  # set key code for driving forward
 keycode_backward = [108]  # set key code for driving backward
 keycode_left = [105]  # set key code for turning left
@@ -149,8 +151,8 @@ direct the cameras in different directions"""
 
 
 def initialize_servo():
-    pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, 1500)  # Makes the servo point straight forward
-    pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, 1500)  # Makes the servo point straight forward
+    pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, START_PW_Z)  # Makes the servo point straight forward
+    pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, START_PW_ELEVATION)  # Makes the servo point straight up
     time.sleep(0.5)  # The time for the servo to straighten forward
 # ---------------- END Servo on startup -------------------------
 # -------Define class with GPIO instructions for driving---------
@@ -214,6 +216,7 @@ def stop_program():
     """shuts down all running components of program"""
     stop_all()
     pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, 0)
+    pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, 0)
     pi.stop()
     print ("Shutting down!")
 
@@ -242,7 +245,11 @@ def main():
         stop = False
         while True:
             if stop:
+                pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, START_PW_Z)
+                pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, START_PW_ELEVATION)
+                time.sleep(1)
                 pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, 0)
+                pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, 0)
                 stop_all()
                 connection.send('Connection aborted, will reconnect in 15s if call not hanged up.')
                 connection.close()
