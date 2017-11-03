@@ -125,9 +125,9 @@ class Car(object):
         else:
             self.cameraDirection_Elevation = round(camera_direction_elevation, 0)
 
-    def set_camera_forward(self, camera_forward):
+    def set_camera_forward(self):
         """Recalibrates which angle is considered forward around the z axis (float)."""
-        self.cameraForward = camera_forward
+        self.cameraForward = self.alpha_degrees
 
     def get_camera_forward(self):
         """Returns which angle is considered forward (float)"""
@@ -306,7 +306,7 @@ def main():
                         the_car.set_driving_direction('right')
                         iteration_control = 2
                     elif data_in_json.get('keycodes') == keycode_calibrate_forward:
-                        the_car.set_camera_forward(alpha_degrees)
+                        the_car.set_camera_forward()
                 if iteration_control <= 0:
                     the_car.set_driving_direction('stop')
                     iteration_control = 0
