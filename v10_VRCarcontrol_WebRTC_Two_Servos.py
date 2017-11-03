@@ -142,7 +142,7 @@ class Car(object):
             self.gamma_degrees += 180
             if self.alpha_degrees < 0:
                 self.alpha_degrees += 360
-        check_upside_down()
+        self.check_upside_down()
         if self.upside_down:
             self.gamma_degrees = 180 - self.gamma_degrees
         alpha_forward_diff1 = self.alpha_degrees - self.cameraForward
