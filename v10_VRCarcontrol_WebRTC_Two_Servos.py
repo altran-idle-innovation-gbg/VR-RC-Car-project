@@ -46,15 +46,18 @@ t = 0.05  # run time
 servoStepLength = 0.5  # Set Step length for Servo
 forward = False  # Constant to set the direction the wheels spin
 backward = True  # Constant to set the direction the wheels spin
-MAX_PW_ELEVATION = 2200  # set the maximum pulse width of the pulse width modulation
+MAX_PW_ELEVATION = 2100  # set the maximum pulse width of the pulse width modulation
                          # for the Servo controlling elevation angle. Larger pulse width points the cameras downward
+                         # for maximum possible rotation without cameras = 2200
 MIN_PW_ELEVATION = 900  # set the minimum pulse width of the pulse width modulation
                         # for the Servo controlling elevation angle. Lower pulse width points the cameras upwards
 START_PW_ELEVATION = 900  # initialization value for the z-axis servo
-MAX_PW_Z = 2250  # set the maximum pulse width of the pulse width modulation
+MAX_PW_Z = 1850  # set the maximum pulse width of the pulse width modulation
                  # for the Servo controlling rotation around Z-axis
-MIN_PW_Z = 750  # set the minimum pulse width of the pulse width modulation
+                 # for maximum possible rotation without cameras = 2250
+MIN_PW_Z = 1050  # set the minimum pulse width of the pulse width modulation
                 # for the Servo controlling rotation around Z-axis
+                # for maximum possible rotation without cameras = 750
 START_PW_Z = 1500  # initialization value for the z-axis servo
 keycode_forward = [103]  # set key code for driving forward
 keycode_backward = [108]  # set key code for driving backward
@@ -76,6 +79,11 @@ class Car(object):
         self.cameraDirection_Z = 1500
         self.cameraDirection_Elevation = 2000
         self.cameraForward = 180.0
+        self.alpha_degrees = 90
+        self.gamma_degrees = 90
+        self.gx = 0
+        self.gy = 0
+        self.upside_down = False
 
     def get_driving_direction(self):
         """Returns the driving direction (String)"""
@@ -125,16 +133,23 @@ class Car(object):
         """Returns which angle is considered forward (float)"""
         return self.cameraForward
 
-    def calculate_new_pulse_widths(self, alpha, gamma):
+    def calculate_new_pulse_widths(self):
         """Calculates and sets the pulse width of the servos. inputs: 1. alpha: the angle (degrees) around z-axis as
            taken from the phone. 2. gamma: elevation angle (degrees) as taken from the phone.
            The alpha angle is compared to the forward angle."""
-        alpha_forward_diff1 = alpha - self.cameraForward
-        gamma_diff = 90 - gamma
+        if self.gamma_degrees < 0:
+            self.alpha_degrees -= 180
+            self.gamma_degrees += 180
+            if self.alpha_degrees < 0:
+                self.alpha_degrees += 360
+        if self.upside_down:
+            self.gamma_degrees = 180 - self.gamma_degrees
+        alpha_forward_diff1 = self.alpha_degrees - self.cameraForward
+        gamma_diff = 90 - self.gamma_degrees
         if alpha_forward_diff1 < 0:
-            alpha_forward_diff2 = 360.0 + alpha - self.cameraForward
+            alpha_forward_diff2 = 360.0 + self.alpha_degrees - self.cameraForward
         else:
-            alpha_forward_diff2 = -360.0 + alpha - self.cameraForward
+            alpha_forward_diff2 = -360.0 + self.alpha_degrees - self.cameraForward
 
         if abs(alpha_forward_diff1) <= abs(alpha_forward_diff2):
             alpha_forward_diff = alpha_forward_diff1
@@ -143,6 +158,18 @@ class Car(object):
 
         self.set_camera_direction_z(1500-alpha_forward_diff*750/90.0)
         self.set_camera_direction_elevation(1900.0-gamma_diff*1000.0/90.0)
+
+    def extract_json_data(self,json_data):
+        self.alpha_degrees = float(json_data.get('do').get('alpha'))
+        self.gamma_degrees = float(json_data.get('do').get('gamma'))
+        self.gx = float(json_data.get('dm').get('gx'))
+        self.gy = float(json_data.get('dm').get('gy'))
+
+    def check_upside_down(self):
+        if self.gx > 7 or self.gy > 7:
+            self.upside_down = True
+        elif self.gx < -7 or self.gy < -7:
+            self.upside_down = False
 
 # ------------------- End Car Class------------------------------
 # ----------------- Servo on startup ----------------------------
@@ -260,26 +287,8 @@ def main():
             try:
                 data_in_json = json.loads(data_in_string)
                 if data_in_json.get('do'):
-                    alpha_degrees = float(data_in_json.get('do').get('alpha'))
-                    gamma_degrees = float(data_in_json.get('do').get('gamma'))
-                    check_upside_down1 = float(data_in_json.get('dm').get('gx'))
-                    check_upside_down2 = float(data_in_json.get('dm').get('gy'))
-                    print('check_upside_down1: ', check_upside_down1)
-                    print('check_upside_down2: ', check_upside_down2)
-                    if gamma_degrees < 0:
-                        alpha_degrees -= 180
-                        gamma_degrees += 180
-                        if alpha_degrees < 0:
-                            alpha_degrees += 360
-                    if check_upside_down1 > 7 or check_upside_down2 > 7:
-                        upside_down = True
-                    elif check_upside_down2 < -7 or check_upside_down1 < -7:
-                        upside_down = False
-                    if upside_down:
-                        gamma_degrees = 180 - gamma_degrees
-                    print('gamma_degrees: ', gamma_degrees)
-                    print('upside_down?: ', upside_down)
-                    the_car.calculate_new_pulse_widths(alpha_degrees, gamma_degrees)
+                    the_car.extract_json_data(data_in_json)
+                    the_car.calculate_new_pulse_widths()
                 elif data_in_json.get('keycodes'):
                     if data_in_json.get('keycodes') == keycode_forward:
                         the_car.set_driving_direction('forward')
@@ -302,8 +311,6 @@ def main():
                 driving_direction_list[the_car.get_driving_direction()]()
                 pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, round(the_car.get_camera_direction_z(), -1))
                 pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, round(the_car.get_camera_direction_elevation(), 0))
-                print('alpha: ', round(the_car.get_camera_direction_z(), -1))
-                print('gamma: ', round(the_car.get_camera_direction_elevation(), 0))
                 iteration_control -= 1
             except ValueError:
                 if data_in_string == quit_command:
