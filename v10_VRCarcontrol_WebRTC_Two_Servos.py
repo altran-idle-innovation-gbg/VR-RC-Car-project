@@ -181,6 +181,14 @@ def initialize_servo():
     pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, START_PW_Z)  # Makes the servo point straight forward
     pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, START_PW_ELEVATION)  # Makes the servo point straight up
     time.sleep(0.5)  # The time for the servo to straighten forward
+
+
+def stop_servos():
+    pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, START_PW_Z)
+    pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, START_PW_ELEVATION)
+    time.sleep(1)
+    pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, 0)
+    pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, 0)
 # ---------------- END Servo on startup -------------------------
 # -------Define class with GPIO instructions for driving---------
 """Functions to drive the Car. Because how the h-bridge is designed, the motors need to be
@@ -223,7 +231,7 @@ def drive_right_pivot():
     pi.write(ENABLE_R_PIN, True)  # EN2 Enables LH wheels to spin
 
 
-def stop_all():
+def stop_motors():
     pi.write(ENABLE_L_PIN, False)
     pi.write(ENABLE_R_PIN, False)
     pi.write(DIR_L_PIN, False)
@@ -234,16 +242,15 @@ def stop_all():
 # --------------------- Driving direction list ----------------------
 """The driving list is later used as a look up table to call the driving functions."""
 driving_direction_list = {'forward': drive_forward, 'backward': drive_backward,
-                          'left': drive_left_pivot, 'right': drive_right_pivot, 'stop': stop_all}
+                          'left': drive_left_pivot, 'right': drive_right_pivot, 'stop': stop_motors}
 # --------------------- End Driving Direction List ------------------
 # -----------------------Define quit game class ------------------
 
 
 def stop_program():
     """shuts down all running components of program"""
-    stop_all()
-    pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, 0)
-    pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, 0)
+    stop_motors()
+    stop_servos()
     pi.stop()
     print ("Shutting down!")
 
@@ -273,12 +280,8 @@ def main():
         stop = False
         while True:
             if stop:
-                pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, START_PW_Z)
-                pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, START_PW_ELEVATION)
-                time.sleep(1)
-                pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, 0)
-                pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, 0)
-                stop_all()
+                stop_servos()
+                stop_motors()
                 connection.send('Connection aborted, will reconnect in 15s if call not hanged up.')
                 connection.close()
                 time.sleep(15)
@@ -311,6 +314,8 @@ def main():
                 driving_direction_list[the_car.get_driving_direction()]()
                 pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, round(the_car.get_camera_direction_z(), -1))
                 pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, round(the_car.get_camera_direction_elevation(), 0))
+                print('alpha_degrees :', round(the_car.get_camera_direction_z(), -1))
+                print('gamma_degrees :', round(the_car.get_camera_direction_elevation(), 0))
                 iteration_control -= 1
             except ValueError:
                 if data_in_string == quit_command:
