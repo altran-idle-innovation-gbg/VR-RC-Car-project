@@ -142,6 +142,7 @@ class Car(object):
             self.gamma_degrees += 180
             if self.alpha_degrees < 0:
                 self.alpha_degrees += 360
+        check_upside_down()
         if self.upside_down:
             self.gamma_degrees = 180 - self.gamma_degrees
         alpha_forward_diff1 = self.alpha_degrees - self.cameraForward
@@ -159,7 +160,7 @@ class Car(object):
         self.set_camera_direction_z(1500-alpha_forward_diff*750/90.0)
         self.set_camera_direction_elevation(1900.0-gamma_diff*1000.0/90.0)
 
-    def extract_json_data(self,json_data):
+    def extract_json_data(self, json_data):
         self.alpha_degrees = float(json_data.get('do').get('alpha'))
         self.gamma_degrees = float(json_data.get('do').get('gamma'))
         self.gx = float(json_data.get('dm').get('gx'))
@@ -269,7 +270,6 @@ def main():
     alpha_degrees = 180.0
     iteration_control = 0
     turn_off_program = False
-    upside_down = False
     while True:
         if turn_off_program:
             break
