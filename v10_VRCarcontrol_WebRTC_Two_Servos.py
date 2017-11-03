@@ -123,7 +123,7 @@ class Car(object):
         elif camera_direction_elevation > MAX_PW_ELEVATION:
             self.cameraDirection_Elevation = MAX_PW_ELEVATION
         else:
-            self.cameraDirection_Elevation = round(camera_direction_elevation, -1)
+            self.cameraDirection_Elevation = round(camera_direction_elevation, 0)
 
     def set_camera_forward(self, camera_forward):
         """Recalibrates which angle is considered forward around the z axis (float)."""
