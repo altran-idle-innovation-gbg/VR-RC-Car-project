@@ -8,18 +8,7 @@ import socket
 import os
 import json
 
-# ------------------ Communication with phone ----------------
-""" Setup of the communication service through the webrtc server."""
-socket_path = '/tmp/uv4l.socket'
-try:
-    os.unlink(socket_path)
-except OSError:
-    if os.path.exists(socket_path):
-        raise
-s = socket.socket(socket.AF_UNIX, socket.SOCK_SEQPACKET)
-s.bind(socket_path)
-s.listen(0)
-# ----------------- end communication with phone -----------------
+
 # ------------------ GPIO INITIATION ------------------------
 """ This section declares and initialize the gpio pins """
 pi = pigpio.pi()  # Setup pigpio connection to the raspberry pi
@@ -257,6 +246,24 @@ def stop_program():
 
 
 # ---------------------END Define quit game class ----------------
+
+# ------------------ Communication with phone ----------------
+""" Setup of the communication service through the webrtc server."""
+
+
+def setup_connection():
+    socket_path = '/tmp/uv4l.socket'
+    try:
+        os.unlink(socket_path)
+    except OSError:
+        if os.path.exists(socket_path):
+            raise
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_SEQPACKET)
+    s.bind(socket_path)
+    s.listen(0)
+    return s
+# ----------------- end communication with phone -----------------
+
 # ---------------- Main ------------------------
 
 
@@ -272,6 +279,7 @@ def main():
     while True:
         if turn_off_program:  # Exit main loop if quit command received
             break
+        s = setup_connection()
         print 'awaiting connection...'
         connection, client_address = s.accept()  # Establish connection to client
         print 'Connection established'
@@ -281,9 +289,11 @@ def main():
             if stop:
                 stop_servos()
                 stop_motors()
+                print 'stop sequence initiated'
                 connection.send('Connection aborted, will reconnect in 15s if call not hanged up.')
                 connection.close()
                 time.sleep(15)
+                s.close()
                 break
             data_in_string = connection.recv(256)
             try:
