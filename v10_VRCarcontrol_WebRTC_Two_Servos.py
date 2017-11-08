@@ -173,7 +173,7 @@ class Car(object):
             self.upside_down = False
 
 # ------------------- End Car Class------------------------------
-# ----------------- Servo on startup ----------------------------
+# ----------------- Servo initialization/stop ----------------------------
 """The Servo is started, and later only the duty cycle is changed to
 direct the cameras in different directions"""
 
@@ -185,11 +185,11 @@ def initialize_servo():
 
 
 def stop_servos():
-    pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, START_PW_Z)
-    pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, START_PW_ELEVATION)
-    time.sleep(1)
-    pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, 0)
-    pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, 0)
+    pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, START_PW_Z)  # Points the servo to starting position
+    pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, START_PW_ELEVATION)  # points the servo to starting position
+    time.sleep(1)  # wait one second for the servo to reach starting position
+    pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, 0)  # Stop servo
+    pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, 0)  # Stop servo
 # ---------------- END Servo on startup -------------------------
 # -------Define class with GPIO instructions for driving---------
 """Functions to drive the Car. Because how the h-bridge is designed, the motors need to be
@@ -197,46 +197,46 @@ disabled before changing the driving directions of the motors."""
 
 
 def drive_forward():
-    pi.write(ENABLE_L_PIN, False)  # EN1 Disable RH wheels to spin
-    pi.write(ENABLE_R_PIN, False)  # EN2 Disable LH wheels to spin
-    pi.write(DIR_L_PIN, forward)  # Enable RH wheels to spin forward
-    pi.write(DIR_R_PIN, forward)  # Enable LH wheels to spin forward
-    pi.write(ENABLE_L_PIN, True)  # EN1 Enable RH wheels to spin
-    pi.write(ENABLE_R_PIN, True)  # EN2 Enable LH wheels to spin
+    pi.write(ENABLE_L_PIN, False)  # Stop LH wheels
+    pi.write(ENABLE_R_PIN, False)  # Stop RH wheels
+    pi.write(DIR_L_PIN, forward)  # Set LH wheels to spin forward
+    pi.write(DIR_R_PIN, forward)  # Set RH wheels to spin forward
+    pi.write(ENABLE_L_PIN, True)  # Start spinning LH wheels
+    pi.write(ENABLE_R_PIN, True)  # Start spinning RH wheels
 
 
 def drive_backward():
-    pi.write(ENABLE_L_PIN, False)  # EN1 Disable RH wheels to spin
-    pi.write(ENABLE_R_PIN, False)  # EN2 Disable LH wheels to spin
-    pi.write(DIR_L_PIN, backward)  # Enable RH wheels to spin backwards
-    pi.write(DIR_R_PIN, backward)  # Enable LH wheels to spin backwards
-    pi.write(ENABLE_L_PIN, True)  # EN1 Enable RH wheels to spin
-    pi.write(ENABLE_R_PIN, True)  # EN2 Enable LH wheels to spin
+    pi.write(ENABLE_L_PIN, False)  # Stop LH wheels
+    pi.write(ENABLE_R_PIN, False)  # Stop RH wheels
+    pi.write(DIR_L_PIN, backward)  # Set LH wheels to spin backward
+    pi.write(DIR_R_PIN, backward)  # Set RH wheels to spin backward
+    pi.write(ENABLE_L_PIN, True)  # Start spinning LH wheels
+    pi.write(ENABLE_R_PIN, True)  # Start spinning RH wheels
 
 
 def drive_left_pivot():
-    pi.write(ENABLE_L_PIN, False)  # EN1 Disable RH wheels to spin
-    pi.write(ENABLE_R_PIN, False)  # EN2 Disable LH wheels to spin
-    pi.write(DIR_L_PIN, backward)  # Enabels RH wheels to spin forward
-    pi.write(DIR_R_PIN, forward)  # Enabels LH wheels to spin backwards
-    pi.write(ENABLE_L_PIN, True)  # EN1 Enables RH wheels to spin
-    pi.write(ENABLE_R_PIN, True)  # EN2 Enables LH wheels to spin
+    pi.write(ENABLE_L_PIN, False)  # Stop LH wheels
+    pi.write(ENABLE_R_PIN, False)  # Stop RH wheels
+    pi.write(DIR_L_PIN, backward)  # Set RH wheels to spin backward
+    pi.write(DIR_R_PIN, forward)  # Set LH wheels to spin forward
+    pi.write(ENABLE_L_PIN, True)  # Start spinning LH wheels
+    pi.write(ENABLE_R_PIN, True)  # Start spinning RH wheels
 
 
 def drive_right_pivot():
-    pi.write(ENABLE_L_PIN, False)  # EN1 Disable RH wheels to spin
-    pi.write(ENABLE_R_PIN, False)  # EN2 Enables LH wheels to spin
-    pi.write(DIR_L_PIN, forward)  # Enabels RH wheels to spin backwards
-    pi.write(DIR_R_PIN, backward)  # Enabels LH wheels to spin forward
-    pi.write(ENABLE_L_PIN, True)  # EN1 Enables RH wheels to spin
-    pi.write(ENABLE_R_PIN, True)  # EN2 Enables LH wheels to spin
+    pi.write(ENABLE_L_PIN, False)  # Stop LH wheels
+    pi.write(ENABLE_R_PIN, False)  # Stop RH wheels
+    pi.write(DIR_L_PIN, forward)  # Set LH wheels to spin forward
+    pi.write(DIR_R_PIN, backward)  # Set RH wheels to spin backward
+    pi.write(ENABLE_L_PIN, True)  # Start spinning LH wheels
+    pi.write(ENABLE_R_PIN, True)  # Start spinning RH wheels
 
 
 def stop_motors():
-    pi.write(ENABLE_L_PIN, False)
-    pi.write(ENABLE_R_PIN, False)
-    pi.write(DIR_L_PIN, False)
-    pi.write(DIR_R_PIN, False)
+    pi.write(ENABLE_L_PIN, False)  # Stop LH wheels
+    pi.write(ENABLE_R_PIN, False)  # Stop RH wheels
+    pi.write(DIR_L_PIN, False)  # Set LH wheels to spin backward
+    pi.write(DIR_R_PIN, False)  # Set RH wheels to spin backward
 
 
 # -------END-Define class with GPIO instructions for driving---------
@@ -262,22 +262,21 @@ def stop_program():
 
 def main():
     """
-    the main loop can be toggled between joystick and keyboard
-    controls by pressing the <space> key. while using keyboard controls,
-    speed can be set using number keys 1 - 9
+    Main loop controlling the program flow.
+    By sending Quit/Stop it is possible to quit the program or stop the connection to the phone.
+    After stopping, it is possible to connect another phone to the car.
     """
-    the_car = Car()
-    alpha_degrees = 180.0
-    iteration_control = 0
-    turn_off_program = False
+    the_car = Car()  # Create the Car object
+    iteration_control = 0  # used to control how many iterations the car should enable the motors
+    turn_off_program = False  # Used to send quit command
     while True:
-        if turn_off_program:
+        if turn_off_program:  # Exit main loop if quit command received
             break
         print 'awaiting connection...'
-        connection, client_address = s.accept()
-        print client_address
-        initialize_servo()
-        stop = False
+        connection, client_address = s.accept()  # Establish connection to client
+        print 'Connection established'
+        initialize_servo()  # initialize the servo
+        stop = False  # used to stop the control loop and a new connection is possible.
         while True:
             if stop:
                 stop_servos()
