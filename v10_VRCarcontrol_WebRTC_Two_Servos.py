@@ -1,4 +1,3 @@
-# import RPi.GPIO as GPIO
 import pigpio
 import pygame
 import time
@@ -7,7 +6,7 @@ import re
 import socket
 import os
 import json
-
+from subprocess import call
 
 # ------------------ GPIO INITIATION ------------------------
 """ This section declares and initialize the gpio pins """
@@ -31,8 +30,8 @@ pi.write(ENABLE_R_PIN, False)  # Set right side wheels to stop spinning.
 # ---------------- END GPIO INITIATION -----------------------
 # -------------------- Variables -----------------------------
 """This section initialize constants used through out the program"""
-t = 0.05  # run time
-servoStepLength = 0.5  # Set Step length for Servo
+# t = 0.05  # run time
+# servoStepLength = 0.5  # Set Step length for Servo
 forward = False  # Constant to set the direction the wheels spin
 backward = True  # Constant to set the direction the wheels spin
 MAX_PW_ELEVATION = 2100  # set the maximum pulse width of the pulse width modulation
@@ -150,12 +149,14 @@ class Car(object):
         self.set_camera_direction_elevation(1900.0-gamma_diff*1000.0/90.0)
 
     def extract_json_data(self, json_data):
+        """Extracts the relevant orientation data sent from phone and save them to class variables"""
         self.alpha_degrees = float(json_data.get('do').get('alpha'))
         self.gamma_degrees = float(json_data.get('do').get('gamma'))
         self.gx = float(json_data.get('dm').get('gx'))
         self.gy = float(json_data.get('dm').get('gy'))
 
     def check_upside_down(self):
+        """ Check if the phone has turned 180 degrees around the phone's y-axis"""
         if self.gx > 7 or self.gy > 7:
             self.upside_down = True
         elif self.gx < -7 or self.gy < -7:
@@ -168,12 +169,14 @@ direct the cameras in different directions"""
 
 
 def initialize_servo():
+    """ Initialize the Servos and make them point to starting position"""
     pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, START_PW_Z)  # Makes the servo point straight forward
     pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, START_PW_ELEVATION)  # Makes the servo point straight up
     time.sleep(0.5)  # The time for the servo to straighten forward
 
 
 def stop_servos():
+    """ Make the servo point to starting position and then turn the PWM signal off"""
     pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, START_PW_Z)  # Points the servo to starting position
     pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, START_PW_ELEVATION)  # points the servo to starting position
     time.sleep(1)  # wait one second for the servo to reach starting position
@@ -186,6 +189,7 @@ disabled before changing the driving directions of the motors."""
 
 
 def drive_forward():
+    """ Turn off all motors, set all motors to turn forward, start all motors"""
     pi.write(ENABLE_L_PIN, False)  # Stop LH wheels
     pi.write(ENABLE_R_PIN, False)  # Stop RH wheels
     pi.write(DIR_L_PIN, forward)  # Set LH wheels to spin forward
@@ -195,6 +199,7 @@ def drive_forward():
 
 
 def drive_backward():
+    """ Turn off all motors, set all motors to turn backward, start all motors"""
     pi.write(ENABLE_L_PIN, False)  # Stop LH wheels
     pi.write(ENABLE_R_PIN, False)  # Stop RH wheels
     pi.write(DIR_L_PIN, backward)  # Set LH wheels to spin backward
@@ -204,15 +209,17 @@ def drive_backward():
 
 
 def drive_left_pivot():
+    """ Turn off all motors, set LH motors to turn backward and RH motors to turn forward, start all motors"""
     pi.write(ENABLE_L_PIN, False)  # Stop LH wheels
     pi.write(ENABLE_R_PIN, False)  # Stop RH wheels
-    pi.write(DIR_L_PIN, backward)  # Set RH wheels to spin backward
-    pi.write(DIR_R_PIN, forward)  # Set LH wheels to spin forward
+    pi.write(DIR_L_PIN, backward)  # Set LH wheels to spin backward
+    pi.write(DIR_R_PIN, forward)  # Set RH wheels to spin forward
     pi.write(ENABLE_L_PIN, True)  # Start spinning LH wheels
     pi.write(ENABLE_R_PIN, True)  # Start spinning RH wheels
 
 
 def drive_right_pivot():
+    """ Turn off all motors, set LH motors to turn forward and RH motors to turn backward, start all motors"""
     pi.write(ENABLE_L_PIN, False)  # Stop LH wheels
     pi.write(ENABLE_R_PIN, False)  # Stop RH wheels
     pi.write(DIR_L_PIN, forward)  # Set LH wheels to spin forward
@@ -222,6 +229,7 @@ def drive_right_pivot():
 
 
 def stop_motors():
+    """Stop all motors, turn all motor GPIO pins to low."""
     pi.write(ENABLE_L_PIN, False)  # Stop LH wheels
     pi.write(ENABLE_R_PIN, False)  # Stop RH wheels
     pi.write(DIR_L_PIN, False)  # Set LH wheels to spin backward
@@ -231,8 +239,10 @@ def stop_motors():
 # -------END-Define class with GPIO instructions for driving---------
 # --------------------- Driving direction list ----------------------
 """The driving list is later used as a look up table to call the driving functions."""
+
 driving_direction_list = {'forward': drive_forward, 'backward': drive_backward,
                           'left': drive_left_pivot, 'right': drive_right_pivot, 'stop': stop_motors}
+
 # --------------------- End Driving Direction List ------------------
 # -----------------------Define quit game class ------------------
 
@@ -252,6 +262,7 @@ def stop_program():
 
 
 def setup_connection():
+    """Setup socket connection and returns socket to listen to."""
     socket_path = '/tmp/uv4l.socket'
     try:
         os.unlink(socket_path)
@@ -279,14 +290,14 @@ def main():
     while True:
         if turn_off_program:  # Exit main loop if quit command received
             break
-        s = setup_connection()
+        s = setup_connection()  # Setup connection
         print 'awaiting connection...'
         connection, client_address = s.accept()  # Establish connection to client
         print 'Connection established'
         initialize_servo()  # initialize the servo
         stop = False  # used to stop the control loop and a new connection is possible.
         while True:
-            if stop:
+            if stop:  # if stop command has been received, enter stop sequence.
                 stop_servos()
                 stop_motors()
                 print 'stop sequence initiated'
@@ -295,14 +306,14 @@ def main():
                 time.sleep(15)
                 s.close()
                 break
-            data_in_string = connection.recv(256)
+            data_in_string = connection.recv(256)  # Retrieved the received string.
             try:
-                data_in_json = json.loads(data_in_string)
-                if data_in_json.get('do'):
+                data_in_json = json.loads(data_in_string)  # change string into json object
+                if data_in_json.get('do'):  # if the json-object contains 'do'
                     the_car.extract_json_data(data_in_json)
                     the_car.calculate_new_pulse_widths()
-                elif data_in_json.get('keycodes'):
-                    if data_in_json.get('keycodes') == keycode_forward:
+                elif data_in_json.get('keycodes'):  # if the json-object contains 'keycodes'
+                    if data_in_json.get('keycodes') == keycode_forward:  # check if relevant keycode has been sent
                         the_car.set_driving_direction('forward')
                         iteration_control = 5
                     elif data_in_json.get('keycodes') == keycode_backward:
@@ -316,21 +327,21 @@ def main():
                         iteration_control = 2
                     elif data_in_json.get('keycodes') == keycode_calibrate_forward:
                         the_car.set_camera_forward()
-                if iteration_control <= 0:
-                    the_car.set_driving_direction('stop')
+                if iteration_control <= 0:  # Check if car motors has been going for the specified number of iterations
+                    the_car.set_driving_direction('stop')  # stop motors if it has.
                     iteration_control = 0
 
-                driving_direction_list[the_car.get_driving_direction()]()
-                pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, round(the_car.get_camera_direction_z(), -1))
+                driving_direction_list[the_car.get_driving_direction()]()  # Call motor function from list
+                pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, round(the_car.get_camera_direction_z(), -1))  # Set servos
                 pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, round(the_car.get_camera_direction_elevation(), 0))
-                print('alpha_degrees :', round(the_car.get_camera_direction_z(), -1))
-                print('gamma_degrees :', round(the_car.get_camera_direction_elevation(), 0))
+                # print('alpha_degrees :', round(the_car.get_camera_direction_z(), -1))
+                # print('gamma_degrees :', round(the_car.get_camera_direction_elevation(), 0))
                 iteration_control -= 1
-            except ValueError:
-                if data_in_string == quit_command:
+            except ValueError:  # Check if something other than json-object has been sent.
+                if data_in_string == quit_command:  # Check if quit command has been sent
                     stop = True
                     turn_off_program = True
-                elif data_in_string == stop_command:
+                elif data_in_string == stop_command:  # Check if stop command has been sent
                     stop = True
 # ------------------------End Main---------------------------------------
 
@@ -340,3 +351,4 @@ if __name__ == "__main__":
     except Exception as e:
         print e
     stop_program()
+    # call("sudo nohup shutdown -h now", shell=True)  # Turns off RPi when program ends.
