@@ -40,6 +40,8 @@ MAX_PW_ELEVATION = 2100  # set the maximum pulse width of the pulse width modula
 MIN_PW_ELEVATION = 900  # set the minimum pulse width of the pulse width modulation
                         # for the Servo controlling elevation angle. Lower pulse width points the cameras upwards
 START_PW_ELEVATION = 900  # initialization value for the z-axis servo
+FORWARD_PW_ELEVATION = 1900  # pulse width to make the cameras face forward
+DEG2PW_FACTOR_ELEVATION = 1000.0/90.0  # Factor to change from degrees into pulse width.
 MAX_PW_Z = 1850  # set the maximum pulse width of the pulse width modulation
                  # for the Servo controlling rotation around Z-axis
                  # for maximum possible rotation without cameras = 2250
@@ -47,6 +49,8 @@ MIN_PW_Z = 1050  # set the minimum pulse width of the pulse width modulation
                 # for the Servo controlling rotation around Z-axis
                 # for maximum possible rotation without cameras = 750
 START_PW_Z = 1500  # initialization value for the z-axis servo
+FORWARD_PW_Z = 1500  # pulse width to make the cameras face forward
+DEG2PW_FACTOR_Z = 750/90.0  # Factor to change from degrees into pulse width.
 keycode_forward = [103]  # set key code for driving forward
 keycode_backward = [108]  # set key code for driving backward
 keycode_left = [105]  # set key code for turning left
@@ -145,8 +149,8 @@ class Car(object):
         else:
             alpha_forward_diff = alpha_forward_diff2
 
-        self.set_camera_direction_z(1500-alpha_forward_diff*750/90.0)
-        self.set_camera_direction_elevation(1900.0-gamma_diff*1000.0/90.0)
+        self.set_camera_direction_z(FORWARD_PW_Z-alpha_forward_diff*DEG2PW_FACTOR_Z)
+        self.set_camera_direction_elevation(FORWARD_PW_ELEVATION-gamma_diff*DEG2PW_FACTOR_ELEVATION)
 
     def extract_json_data(self, json_data):
         """Extracts the relevant orientation data sent from phone and save them to class variables"""
@@ -334,8 +338,6 @@ def main():
                 driving_direction_list[the_car.get_driving_direction()]()  # Call motor function from list
                 pi.set_servo_pulsewidth(SERVO_PIN_Z_AXIS, round(the_car.get_camera_direction_z(), -1))  # Set servos
                 pi.set_servo_pulsewidth(SERVO_PIN_ELEVATION, round(the_car.get_camera_direction_elevation(), 0))
-                # print('alpha_degrees :', round(the_car.get_camera_direction_z(), -1))
-                # print('gamma_degrees :', round(the_car.get_camera_direction_elevation(), 0))
                 iteration_control -= 1
             except ValueError:  # Check if something other than json-object has been sent.
                 if data_in_string == quit_command:  # Check if quit command has been sent
