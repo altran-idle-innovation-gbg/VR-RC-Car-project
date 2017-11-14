@@ -68,8 +68,8 @@ class Car(object):
     def __init__(self):
         """The car is initialized as standing still with camera direction forward"""
         self.drivingDirection = "stop"
-        self.cameraDirection_Z = 1500
-        self.cameraDirection_Elevation = 2000
+        self.cameraDirection_Z = START_PW_Z
+        self.cameraDirection_Elevation = START_PW_ELEVATION
         self.cameraForward = 180.0
         self.alpha_degrees = 90
         self.gamma_degrees = 90
@@ -160,7 +160,8 @@ class Car(object):
         self.gy = float(json_data.get('dm').get('gy'))
 
     def check_upside_down(self):
-        """ Check if the phone has turned 180 degrees around the phone's y-axis"""
+        """ Check if the phone has turned 180 degrees around the phone's y-axis. upside down will change if the up down
+        tilt of the phone is between +/- 30 degrees"""
         if self.gx > 7 or self.gy > 7:
             self.upside_down = True
         elif self.gx < -7 or self.gy < -7:
