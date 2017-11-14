@@ -122,9 +122,9 @@ class Car(object):
         return self.cameraForward
 
     def calculate_new_pulse_widths(self):
-        """Calculates and sets the pulse width of the servos. inputs: 1. alpha: the angle (degrees) around z-axis as
-           taken from the phone. 2. gamma: elevation angle (degrees) as taken from the phone.
-           The alpha angle is compared to the forward angle."""
+        """Calculates and sets the pulse width of the servos. All angles changes with 180 degrees when the phone passes
+        from being pointed upward to downward and vice versa. First check if the phone is pointed up or down and change
+        the degrees accordingly."""
         if self.gamma_degrees < 0:
             self.alpha_degrees -= 180
             self.gamma_degrees += 180
